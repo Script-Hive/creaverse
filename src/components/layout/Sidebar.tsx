@@ -19,12 +19,14 @@ import {
   Bell,
   Settings,
   Shield,
-  LucideIcon
+  LucideIcon,
+  Loader2
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useMemo } from "react";
+import { useAutoTranslate } from "@/hooks/useTranslation";
 
 interface NavItem {
   label: string;
@@ -51,6 +53,12 @@ const categoryNavItems: NavItem[] = [
   { label: "Music", href: "/category/music", icon: Music },
 ];
 
+const extraNavItems: NavItem[] = [
+  { label: "Wallet", href: "/wallet", icon: Wallet },
+  { label: "Governance", href: "/governance", icon: Shield },
+  { label: "Rewards", href: "/rewards", icon: Trophy },
+];
+
 interface SidebarProps {
   isOpen: boolean;
   onClose: () => void;
@@ -58,6 +66,19 @@ interface SidebarProps {
 
 export function Sidebar({ isOpen, onClose }: SidebarProps) {
   const location = useLocation();
+
+  // Collect all texts that need translation
+  const textsToTranslate = useMemo(() => [
+    ...mainNavItems.map(item => item.label),
+    ...categoryNavItems.map(item => item.label),
+    ...extraNavItems.map(item => item.label),
+    "Categories",
+    "Create & Earn",
+    "Token Balance",
+    "+120 this week",
+  ], []);
+
+  const { t, isLoading } = useAutoTranslate(textsToTranslate);
 
   return (
     <>
@@ -84,7 +105,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
             </div>
             <div>
               <h1 className="font-bold text-lg text-sidebar-foreground">Creaverse</h1>
-              <p className="text-xs text-muted-foreground">Create & Earn</p>
+              <p className="text-xs text-muted-foreground">{t("Create & Earn")}</p>
             </div>
           </Link>
 
@@ -105,7 +126,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
             {mainNavItems.map((item) => (
               <NavLink
                 key={item.href}
-                item={item}
+                item={{ ...item, label: t(item.label) }}
                 isActive={location.pathname === item.href}
               />
             ))}
@@ -113,13 +134,14 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
 
           {/* Categories */}
           <div className="pt-4 mt-4 border-t border-sidebar-border space-y-1">
-            <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider px-3 mb-3">
-              Categories
+            <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider px-3 mb-3 flex items-center gap-2">
+              {t("Categories")}
+              {isLoading && <Loader2 className="w-3 h-3 animate-spin" />}
             </p>
             {categoryNavItems.map((item) => (
               <NavLink
                 key={item.href}
-                item={item}
+                item={{ ...item, label: t(item.label) }}
                 isActive={location.pathname === item.href}
               />
             ))}
@@ -127,18 +149,13 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
 
           {/* Wallet, Governance & Rewards */}
           <div className="pt-4 mt-4 border-t border-sidebar-border space-y-1">
-            <NavLink
-              item={{ label: "Wallet", href: "/wallet", icon: Wallet }}
-              isActive={location.pathname === "/wallet"}
-            />
-            <NavLink
-              item={{ label: "Governance", href: "/governance", icon: Shield }}
-              isActive={location.pathname === "/governance"}
-            />
-            <NavLink
-              item={{ label: "Rewards", href: "/rewards", icon: Trophy }}
-              isActive={location.pathname === "/rewards"}
-            />
+            {extraNavItems.map((item) => (
+              <NavLink
+                key={item.href}
+                item={{ ...item, label: t(item.label) }}
+                isActive={location.pathname === item.href}
+              />
+            ))}
           </div>
         </nav>
 
@@ -146,11 +163,11 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
         <div className="p-4 border-t border-sidebar-border">
           <div className="p-4 rounded-xl bg-gradient-card border border-border/50">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-xs text-muted-foreground">Token Balance</span>
+              <span className="text-xs text-muted-foreground">{t("Token Balance")}</span>
               <Sparkles className="w-4 h-4 text-primary" />
             </div>
             <p className="text-2xl font-bold text-gradient-primary">2,340</p>
-            <p className="text-xs text-success mt-1">+120 this week</p>
+            <p className="text-xs text-success mt-1">{t("+120 this week")}</p>
           </div>
         </div>
       </aside>
@@ -184,6 +201,12 @@ function NavLink({ item, isActive }: NavLinkProps) {
 
 export function MobileNav({ onMenuClick }: { onMenuClick: () => void }) {
   const location = useLocation();
+
+  const textsToTranslate = useMemo(() => 
+    mainNavItems.map(item => item.label), 
+  []);
+
+  const { t } = useAutoTranslate(textsToTranslate);
 
   return (
     <>
@@ -226,7 +249,7 @@ export function MobileNav({ onMenuClick }: { onMenuClick: () => void }) {
                 )}
               >
                 <Icon className="w-6 h-6" />
-                <span className="text-[10px] font-medium">{item.label}</span>
+                <span className="text-[10px] font-medium">{t(item.label)}</span>
               </Link>
             );
           })}
@@ -238,6 +261,12 @@ export function MobileNav({ onMenuClick }: { onMenuClick: () => void }) {
 
 export function BottomNav() {
   const location = useLocation();
+
+  const textsToTranslate = useMemo(() => 
+    mainNavItems.map(item => item.label), 
+  []);
+
+  const { t } = useAutoTranslate(textsToTranslate);
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-30 lg:hidden bg-background/95 backdrop-blur-xl border-t border-border">
@@ -262,7 +291,7 @@ export function BottomNav() {
               ) : (
                 <Icon className={cn("w-6 h-6", isActive && "fill-current")} />
               )}
-              <span className="text-[10px] font-medium">{item.label}</span>
+              <span className="text-[10px] font-medium">{t(item.label)}</span>
             </Link>
           );
         })}
