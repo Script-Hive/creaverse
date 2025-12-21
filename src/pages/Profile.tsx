@@ -99,7 +99,7 @@ export default function Profile() {
   const categoryName = primarySubcategory?.subcategory?.category?.name;
 
   const handleFollow = () => {
-    toast.success(`${t("You are now following")} ${user.displayName}`);
+    // Follow logic is now handled in ProfileHeader
   };
 
   const handleMessage = () => {

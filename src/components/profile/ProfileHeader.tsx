@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { 
@@ -13,7 +13,8 @@ import {
   Trophy,
   Sparkles,
   Calendar,
-  MapPin
+  MapPin,
+  Loader2
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { cn } from "@/lib/utils";
@@ -21,6 +22,8 @@ import { User } from "@/types";
 import { getCategoryGradient } from "@/data/categories";
 import { motion, AnimatePresence } from "framer-motion";
 import { CreatorTypeBadge } from "./CreatorTypeBadge";
+import { useIsFollowing, useFollowUser, useUnfollowUser } from "@/hooks/useFollow";
+import { toast } from "sonner";
 
 interface ProfileHeaderProps {
   user: User;
@@ -41,8 +44,14 @@ export function ProfileHeader({
   onMessage,
   onEditProfile 
 }: ProfileHeaderProps) {
-  const [isFollowing, setIsFollowing] = useState(false);
   const [showFullBio, setShowFullBio] = useState(false);
+  
+  // Real follow functionality from database
+  const { data: isFollowing, isLoading: isFollowingLoading } = useIsFollowing(user.id);
+  const followMutation = useFollowUser();
+  const unfollowMutation = useUnfollowUser();
+  
+  const isFollowLoading = followMutation.isPending || unfollowMutation.isPending;
 
   const formatNumber = (num: number): string => {
     if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M`;
@@ -50,9 +59,23 @@ export function ProfileHeader({
     return num.toString();
   };
 
-  const handleFollow = () => {
-    setIsFollowing(!isFollowing);
-    onFollow?.();
+  const handleFollow = async () => {
+    try {
+      if (isFollowing) {
+        await unfollowMutation.mutateAsync(user.id);
+        toast.success(`Unfollowed ${user.displayName}`);
+      } else {
+        await followMutation.mutateAsync(user.id);
+        toast.success(`Now following ${user.displayName}`);
+      }
+      onFollow?.();
+    } catch (error: any) {
+      if (error.message?.includes("logged in")) {
+        toast.error("Please log in to follow users");
+      } else {
+        toast.error("Failed to update follow status");
+      }
+    }
   };
 
   const creatorTypeLabel = creatorTypeDisplay || (user.categories?.[0] 
@@ -228,12 +251,15 @@ export function ProfileHeader({
                     variant={isFollowing ? "outline" : "glow"} 
                     size="sm"
                     onClick={handleFollow}
+                    disabled={isFollowLoading || isFollowingLoading}
                     className={cn(
                       "gap-2 min-w-[100px] transition-all",
                       isFollowing && "hover:bg-destructive/10 hover:text-destructive hover:border-destructive"
                     )}
                   >
-                    {isFollowing ? (
+                    {isFollowLoading ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : isFollowing ? (
                       <>
                         <UserMinus className="w-4 h-4" />
                         Following
