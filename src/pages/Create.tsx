@@ -6,13 +6,6 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { 
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { 
   Image, 
   Video, 
   Music, 
@@ -24,7 +17,14 @@ import {
   ArrowRight,
   Loader2,
   CheckCircle,
-  AlertCircle
+  AlertCircle,
+  Clapperboard,
+  Palette,
+  Code,
+  BookOpen,
+  Leaf,
+  Music2,
+  ChevronRight
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
@@ -43,6 +43,16 @@ const mediaTypes: { id: MediaType; label: string; icon: React.ComponentType<{ cl
   { id: "audio", label: "Audio", icon: Music, accept: "audio/*" },
   { id: "document", label: "Document", icon: FileText, accept: ".pdf,.doc,.docx" },
 ];
+
+// Category icon and color mapping
+const categoryConfig: Record<string, { icon: React.ComponentType<{ className?: string }>; gradient: string; color: string }> = {
+  cinema: { icon: Clapperboard, gradient: "from-red-500 to-orange-500", color: "text-red-400" },
+  art: { icon: Palette, gradient: "from-purple-500 to-pink-500", color: "text-purple-400" },
+  tech: { icon: Code, gradient: "from-cyan-500 to-blue-500", color: "text-cyan-400" },
+  books: { icon: BookOpen, gradient: "from-amber-500 to-yellow-500", color: "text-amber-400" },
+  nature: { icon: Leaf, gradient: "from-green-500 to-emerald-500", color: "text-green-400" },
+  music: { icon: Music2, gradient: "from-pink-500 to-rose-500", color: "text-pink-400" },
+};
 
 export default function Create() {
   const [selectedCategoryId, setSelectedCategoryId] = useState<string>("");
@@ -81,6 +91,8 @@ export default function Create() {
 
   // Get selected category data
   const selectedCategory = categories?.find(c => c.id === selectedCategoryId);
+  const categoryKey = selectedCategory?.name.toLowerCase() || "";
+  const config = categoryConfig[categoryKey] || categoryConfig.tech;
 
   const handleAddTag = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && tagInput.trim()) {
@@ -128,7 +140,7 @@ export default function Create() {
     
     try {
       await createPost.mutateAsync({
-        title: content.substring(0, 100), // Use first 100 chars as title
+        title: content.substring(0, 100),
         content,
         category: categoryName,
         subcategory_id: selectedSubcategoryId,
@@ -173,92 +185,220 @@ export default function Create() {
           <p className="text-muted-foreground">Share your creative work with the community</p>
         </div>
 
-        {/* Category Selection */}
-        <div className="mb-6">
-          <Label className="text-base font-semibold mb-3 block">Select Category</Label>
-          <Select value={selectedCategoryId} onValueChange={setSelectedCategoryId}>
-            <SelectTrigger className="w-full bg-card">
-              <SelectValue placeholder={categoriesLoading ? "Loading categories..." : "Choose a category"} />
-            </SelectTrigger>
-            <SelectContent className="bg-popover border-border z-50">
-              {categories?.map((category) => (
-                <SelectItem key={category.id} value={category.id}>
-                  <div className="flex items-center gap-2">
-                    <div 
-                      className="w-3 h-3 rounded-full" 
-                      style={{ backgroundColor: category.color || 'hsl(var(--primary))' }}
-                    />
-                    <span>{category.name}</span>
-                  </div>
-                </SelectItem>
+        {/* Category Selection - Visual Cards */}
+        <div className="mb-8">
+          <Label className="text-base font-semibold mb-4 block flex items-center gap-2">
+            <span className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center text-xs font-bold text-primary">1</span>
+            Select Your Creative Category
+          </Label>
+          
+          {categoriesLoading ? (
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+              {[...Array(6)].map((_, i) => (
+                <div key={i} className="h-24 rounded-xl bg-muted animate-pulse" />
               ))}
-            </SelectContent>
-          </Select>
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+              {categories?.map((category, index) => {
+                const catKey = category.name.toLowerCase();
+                const catConfig = categoryConfig[catKey] || categoryConfig.tech;
+                const Icon = catConfig.icon;
+                const isSelected = selectedCategoryId === category.id;
+                
+                return (
+                  <motion.button
+                    key={category.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.05 }}
+                    onClick={() => setSelectedCategoryId(category.id)}
+                    className={cn(
+                      "relative group p-4 rounded-xl border-2 transition-all duration-300 overflow-hidden",
+                      isSelected
+                        ? "border-primary bg-primary/10 shadow-lg"
+                        : "border-border/50 bg-card/50 hover:border-primary/50 hover:bg-card"
+                    )}
+                  >
+                    {/* Gradient overlay on hover/select */}
+                    <div className={cn(
+                      "absolute inset-0 opacity-0 transition-opacity duration-300",
+                      `bg-gradient-to-br ${catConfig.gradient}`,
+                      isSelected ? "opacity-10" : "group-hover:opacity-5"
+                    )} />
+                    
+                    {/* Selected indicator */}
+                    <AnimatePresence>
+                      {isSelected && (
+                        <motion.div
+                          initial={{ scale: 0 }}
+                          animate={{ scale: 1 }}
+                          exit={{ scale: 0 }}
+                          className="absolute top-2 right-2"
+                        >
+                          <CheckCircle className="w-5 h-5 text-primary" />
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                    
+                    {/* Icon */}
+                    <div className={cn(
+                      "w-12 h-12 rounded-xl flex items-center justify-center mb-2 mx-auto transition-all duration-300",
+                      `bg-gradient-to-br ${catConfig.gradient}`,
+                      isSelected ? "scale-110 shadow-lg" : "group-hover:scale-105"
+                    )}>
+                      <Icon className="w-6 h-6 text-white" />
+                    </div>
+                    
+                    {/* Label */}
+                    <span className={cn(
+                      "text-sm font-medium block text-center transition-colors",
+                      isSelected ? "text-primary" : "text-foreground"
+                    )}>
+                      {category.name}
+                    </span>
+                    
+                    {/* Description preview */}
+                    {category.description && (
+                      <span className="text-[10px] text-muted-foreground block text-center mt-1 line-clamp-1">
+                        {category.description}
+                      </span>
+                    )}
+                  </motion.button>
+                );
+              })}
+            </div>
+          )}
         </div>
 
-        {/* Subcategory Selection - Only show when category is selected */}
+        {/* Subcategory Selection - Animated Pills */}
         <AnimatePresence mode="wait">
           {selectedCategoryId && (
             <motion.div
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: "auto" }}
               exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: 0.2 }}
-              className="mb-6"
+              transition={{ duration: 0.3 }}
+              className="mb-8"
             >
-              <Label className="text-base font-semibold mb-3 block">Select Subcategory</Label>
-              <Select 
-                value={selectedSubcategoryId} 
-                onValueChange={setSelectedSubcategoryId}
-                disabled={subcategoriesLoading}
-              >
-                <SelectTrigger className="w-full bg-card">
-                  <SelectValue placeholder={subcategoriesLoading ? "Loading subcategories..." : "Choose a subcategory"} />
-                </SelectTrigger>
-                <SelectContent className="bg-popover border-border z-50">
-                  {subcategories?.map((subcategory) => (
-                    <SelectItem key={subcategory.id} value={subcategory.id}>
-                      <div className="flex flex-col items-start">
-                        <span>{subcategory.name}</span>
-                        <span className="text-xs text-muted-foreground">
-                          {subcategory.creator_type_display}
-                        </span>
-                      </div>
-                    </SelectItem>
+              <Label className="text-base font-semibold mb-4 block flex items-center gap-2">
+                <span className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center text-xs font-bold text-primary">2</span>
+                Choose Your Specialty
+                <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                <span className={cn("text-sm font-normal", config.color)}>{selectedCategory?.name}</span>
+              </Label>
+              
+              {subcategoriesLoading ? (
+                <div className="flex flex-wrap gap-2">
+                  {[...Array(4)].map((_, i) => (
+                    <div key={i} className="h-12 w-32 rounded-full bg-muted animate-pulse" />
                   ))}
-                  {subcategories?.length === 0 && (
-                    <div className="p-3 text-sm text-muted-foreground text-center">
-                      No subcategories available
-                    </div>
-                  )}
-                </SelectContent>
-              </Select>
+                </div>
+              ) : subcategories && subcategories.length > 0 ? (
+                <div className="flex flex-wrap gap-3">
+                  {subcategories.map((subcategory, index) => {
+                    const isSelected = selectedSubcategoryId === subcategory.id;
+                    
+                    return (
+                      <motion.button
+                        key={subcategory.id}
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ delay: index * 0.05 }}
+                        onClick={() => setSelectedSubcategoryId(subcategory.id)}
+                        className={cn(
+                          "relative group px-5 py-3 rounded-2xl border-2 transition-all duration-300",
+                          isSelected
+                            ? `border-transparent bg-gradient-to-r ${config.gradient} shadow-lg`
+                            : "border-border/50 bg-card/50 hover:border-primary/50 hover:bg-card"
+                        )}
+                      >
+                        <div className="flex items-center gap-2">
+                          {isSelected && (
+                            <motion.div
+                              initial={{ scale: 0, rotate: -180 }}
+                              animate={{ scale: 1, rotate: 0 }}
+                            >
+                              <CheckCircle className="w-4 h-4 text-white" />
+                            </motion.div>
+                          )}
+                          <span className={cn(
+                            "text-sm font-medium",
+                            isSelected ? "text-white" : "text-foreground"
+                          )}>
+                            {subcategory.name}
+                          </span>
+                        </div>
+                        
+                        {/* Floating badge for creator type */}
+                        {isSelected && (
+                          <motion.div
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className="absolute -bottom-1 left-1/2 -translate-x-1/2 translate-y-full"
+                          >
+                            <div className="bg-background/90 backdrop-blur-sm text-[10px] px-2 py-0.5 rounded-full border border-border/50 text-muted-foreground whitespace-nowrap">
+                              {subcategory.creator_type_display}
+                            </div>
+                          </motion.div>
+                        )}
+                      </motion.button>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="text-center py-8 text-muted-foreground">
+                  No subcategories available for this category
+                </div>
+              )}
             </motion.div>
           )}
         </AnimatePresence>
 
-        {/* Creator Type Display - Auto-filled based on subcategory */}
+        {/* Creator Type Display - Fancy Card */}
         <AnimatePresence mode="wait">
           {selectedSubcategory && (
             <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.2 }}
-              className="mb-6"
+              initial={{ opacity: 0, scale: 0.95, y: -10 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: -10 }}
+              transition={{ duration: 0.3, type: "spring" }}
+              className="mb-8"
             >
-              <Card className="bg-primary/5 border-primary/20">
-                <CardContent className="p-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
-                      <CheckCircle className="w-5 h-5 text-primary" />
-                    </div>
-                    <div>
-                      <Label className="text-sm text-muted-foreground">Post Type / Creator Type</Label>
-                      <p className="text-lg font-semibold text-primary">
+              <Card className={cn(
+                "relative overflow-hidden border-0",
+                `bg-gradient-to-r ${config.gradient}`
+              )}>
+                {/* Animated background pattern */}
+                <div className="absolute inset-0 opacity-20">
+                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(255,255,255,0.2),transparent_50%)]" />
+                  <div className="absolute top-0 left-0 w-full h-full bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4xIj48cGF0aCBkPSJNMzYgMzRjMC0yLjIgMS44LTQgNC00czQgMS44IDQgNC0xLjggNC00IDQtNC0xLjgtNC00eiIvPjwvZz48L2c+PC9zdmc+')] opacity-30" />
+                </div>
+                
+                <CardContent className="relative p-6">
+                  <div className="flex items-center gap-4">
+                    <motion.div 
+                      className="w-14 h-14 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center"
+                      animate={{ rotate: [0, 5, -5, 0] }}
+                      transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
+                    >
+                      <Sparkles className="w-7 h-7 text-white" />
+                    </motion.div>
+                    <div className="flex-1">
+                      <p className="text-white/70 text-sm mb-1">You're creating as</p>
+                      <h3 className="text-xl font-bold text-white">
                         {selectedSubcategory.creator_type_display}
-                      </p>
+                      </h3>
                     </div>
+                    <motion.div
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      transition={{ delay: 0.2, type: "spring" }}
+                    >
+                      <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
+                        <CheckCircle className="w-6 h-6 text-white" />
+                      </div>
+                    </motion.div>
                   </div>
                 </CardContent>
               </Card>
@@ -268,7 +408,10 @@ export default function Create() {
 
         {/* Media Type Selection */}
         <div className="mb-6">
-          <Label className="text-base font-semibold mb-3 block">Media Type</Label>
+          <Label className="text-base font-semibold mb-3 block flex items-center gap-2">
+            <span className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center text-xs font-bold text-primary">3</span>
+            Media Type
+          </Label>
           <div className="flex flex-wrap gap-2">
             {mediaTypes.map((type) => (
               <button
@@ -348,7 +491,8 @@ export default function Create() {
 
         {/* Description */}
         <div className="mb-6">
-          <Label htmlFor="content" className="text-base font-semibold mb-3 block">
+          <Label htmlFor="content" className="text-base font-semibold mb-3 block flex items-center gap-2">
+            <span className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center text-xs font-bold text-primary">4</span>
             Description
           </Label>
           <Textarea
