@@ -20,6 +20,7 @@ import {
   Target
 } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useAutoTranslate } from "@/hooks/useTranslation";
 
 const quickActions = [
   { label: "Create Proposal", href: "/governance/create", icon: Plus, color: "primary" },
@@ -67,14 +68,48 @@ const recentActivity = [
 ];
 
 export default function Dashboard() {
+  const { t } = useAutoTranslate([
+    "Welcome back, John!",
+    "Here's what's happening in Creaverse DAO",
+    "New Proposal",
+    "Your Points",
+    "this week",
+    "Level",
+    "Votes Cast",
+    "pending",
+    "Reputation",
+    "Top 15%",
+    "Create Proposal",
+    "AI Assistant",
+    "View Projects",
+    "Get started",
+    "Active Proposals",
+    "Vote on community decisions",
+    "View All",
+    "Active",
+    "Passed",
+    "Vote",
+    "For:",
+    "Against:",
+    "Top Contributors",
+    "View Leaderboard",
+    "Recent Activity",
+    "Community Event Fund Allocation",
+    "New AI Tool Integration",
+    "Creator Rewards Increase",
+    "You voted on 'Community Event Fund'",
+    "Earned 'Active Voter' badge",
+    "+50 points from proposal creation"
+  ]);
+
   return (
     <AppLayout>
       <div className="space-y-8">
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold">Welcome back, John!</h1>
-            <p className="text-muted-foreground mt-1">Here's what's happening in Creaverse DAO</p>
+            <h1 className="text-3xl font-bold">{t("Welcome back, John!")}</h1>
+            <p className="text-muted-foreground mt-1">{t("Here's what's happening in Creaverse DAO")}</p>
           </div>
           <div className="flex items-center gap-3">
             <Button variant="outline" size="icon">
@@ -83,7 +118,7 @@ export default function Dashboard() {
             <Link to="/governance/create">
               <Button variant="glow">
                 <Plus className="w-4 h-4" />
-                New Proposal
+                {t("New Proposal")}
               </Button>
             </Link>
           </div>
@@ -95,11 +130,11 @@ export default function Dashboard() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-muted-foreground">Your Points</p>
+                  <p className="text-sm text-muted-foreground">{t("Your Points")}</p>
                   <p className="text-2xl font-bold mt-1">1,250</p>
                   <p className="text-xs text-success flex items-center gap-1 mt-1">
                     <TrendingUp className="w-3 h-3" />
-                    +120 this week
+                    +120 {t("this week")}
                   </p>
                 </div>
                 <div className="w-12 h-12 rounded-xl bg-primary/20 flex items-center justify-center">
@@ -113,7 +148,7 @@ export default function Dashboard() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-muted-foreground">Level</p>
+                  <p className="text-sm text-muted-foreground">{t("Level")}</p>
                   <p className="text-2xl font-bold mt-1">5</p>
                   <div className="mt-2">
                     <Progress value={65} className="h-1.5 w-24" />
@@ -130,9 +165,9 @@ export default function Dashboard() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-muted-foreground">Votes Cast</p>
+                  <p className="text-sm text-muted-foreground">{t("Votes Cast")}</p>
                   <p className="text-2xl font-bold mt-1">47</p>
-                  <p className="text-xs text-muted-foreground mt-1">3 pending</p>
+                  <p className="text-xs text-muted-foreground mt-1">3 {t("pending")}</p>
                 </div>
                 <div className="w-12 h-12 rounded-xl bg-accent/20 flex items-center justify-center">
                   <Vote className="w-6 h-6 text-accent" />
@@ -145,9 +180,9 @@ export default function Dashboard() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-muted-foreground">Reputation</p>
+                  <p className="text-sm text-muted-foreground">{t("Reputation")}</p>
                   <p className="text-2xl font-bold mt-1">850</p>
-                  <p className="text-xs text-muted-foreground mt-1">Top 15%</p>
+                  <p className="text-xs text-muted-foreground mt-1">{t("Top 15%")}</p>
                 </div>
                 <div className="w-12 h-12 rounded-xl bg-success/20 flex items-center justify-center">
                   <Sparkles className="w-6 h-6 text-success" />
@@ -169,8 +204,8 @@ export default function Dashboard() {
                       <Icon className={`w-6 h-6 text-${action.color}`} />
                     </div>
                     <div className="flex-1">
-                      <h3 className="font-semibold">{action.label}</h3>
-                      <p className="text-sm text-muted-foreground">Get started</p>
+                      <h3 className="font-semibold">{t(action.label)}</h3>
+                      <p className="text-sm text-muted-foreground">{t("Get started")}</p>
                     </div>
                     <ChevronRight className="w-5 h-5 text-muted-foreground" />
                   </CardContent>
@@ -189,13 +224,13 @@ export default function Dashboard() {
                 <div>
                   <CardTitle className="flex items-center gap-2">
                     <Vote className="w-5 h-5 text-primary" />
-                    Active Proposals
+                    {t("Active Proposals")}
                   </CardTitle>
-                  <CardDescription>Vote on community decisions</CardDescription>
+                  <CardDescription>{t("Vote on community decisions")}</CardDescription>
                 </div>
                 <Link to="/governance">
                   <Button variant="ghost" size="sm">
-                    View All
+                    {t("View All")}
                     <ArrowRight className="w-4 h-4 ml-1" />
                   </Button>
                 </Link>
@@ -210,10 +245,10 @@ export default function Dashboard() {
                       <div className="p-4 rounded-xl border border-border hover:border-primary/50 transition-colors">
                         <div className="flex items-start justify-between gap-4 mb-3">
                           <div className="flex-1">
-                            <h4 className="font-medium text-sm">{proposal.title}</h4>
+                            <h4 className="font-medium text-sm">{t(proposal.title)}</h4>
                             <div className="flex items-center gap-2 mt-1">
                               <Badge variant={proposal.status}>
-                                {proposal.status === "active" ? "Active" : "Passed"}
+                                {proposal.status === "active" ? t("Active") : t("Passed")}
                               </Badge>
                               <span className="text-xs text-muted-foreground flex items-center gap-1">
                                 <Clock className="w-3 h-3" />
@@ -221,13 +256,13 @@ export default function Dashboard() {
                               </span>
                             </div>
                           </div>
-                          <Button variant="outline" size="sm">Vote</Button>
+                          <Button variant="outline" size="sm">{t("Vote")}</Button>
                         </div>
                         
                         <div className="space-y-2">
                           <div className="flex justify-between text-xs">
-                            <span className="text-success">For: {proposal.votesFor}</span>
-                            <span className="text-destructive">Against: {proposal.votesAgainst}</span>
+                            <span className="text-success">{t("For:")} {proposal.votesFor}</span>
+                            <span className="text-destructive">{t("Against:")} {proposal.votesAgainst}</span>
                           </div>
                           <div className="h-2 rounded-full bg-muted overflow-hidden">
                             <div 
@@ -251,7 +286,7 @@ export default function Dashboard() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-lg">
                   <Trophy className="w-5 h-5 text-warning" />
-                  Top Contributors
+                  {t("Top Contributors")}
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
@@ -267,7 +302,7 @@ export default function Dashboard() {
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium truncate">{contributor.name}</p>
-                      <p className="text-xs text-muted-foreground">Level {contributor.level}</p>
+                      <p className="text-xs text-muted-foreground">{t("Level")} {contributor.level}</p>
                     </div>
                     <p className="text-sm font-semibold text-primary">{contributor.points.toLocaleString()}</p>
                   </div>
@@ -275,7 +310,7 @@ export default function Dashboard() {
                 
                 <Link to="/rewards">
                   <Button variant="ghost" size="sm" className="w-full mt-2">
-                    View Leaderboard
+                    {t("View Leaderboard")}
                     <ArrowRight className="w-4 h-4 ml-1" />
                   </Button>
                 </Link>
@@ -285,7 +320,7 @@ export default function Dashboard() {
             {/* Recent Activity */}
             <Card>
               <CardHeader>
-                <CardTitle className="text-lg">Recent Activity</CardTitle>
+                <CardTitle className="text-lg">{t("Recent Activity")}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
                 {recentActivity.map((activity, index) => (
@@ -294,7 +329,7 @@ export default function Dashboard() {
                       <CheckCircle2 className="w-4 h-4 text-muted-foreground" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm">{activity.message}</p>
+                      <p className="text-sm">{t(activity.message)}</p>
                       <p className="text-xs text-muted-foreground">{activity.time}</p>
                     </div>
                   </div>

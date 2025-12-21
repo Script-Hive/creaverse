@@ -19,19 +19,37 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { getCategoryGradient } from "@/data/categories";
+import { useAutoTranslate } from "@/hooks/useTranslation";
 
 export default function Category() {
   const { id } = useParams<{ id: string }>();
   const category = getCategoryById(id as ContentCategory);
+
+  const { t } = useAutoTranslate([
+    "Category Not Found",
+    "Back to Explore",
+    "Posts",
+    "Creators",
+    "Avg Tokens",
+    "Top Creators in",
+    "followers",
+    "Follow",
+    "Trending",
+    "Recent",
+    "Top Rated",
+    "No Posts Yet",
+    "Be the first to post in",
+    "Create Post"
+  ]);
   
   if (!category) {
     return (
       <AppLayout>
         <div className="flex items-center justify-center min-h-[50vh]">
           <div className="text-center">
-            <h1 className="text-2xl font-bold mb-2">Category Not Found</h1>
+            <h1 className="text-2xl font-bold mb-2">{t("Category Not Found")}</h1>
             <Link to="/explore">
-              <Button variant="outline">Back to Explore</Button>
+              <Button variant="outline">{t("Back to Explore")}</Button>
             </Link>
           </div>
         </div>
@@ -76,15 +94,15 @@ export default function Category() {
         <div className="flex items-center justify-around p-4 border-b border-border bg-card">
           <div className="text-center">
             <p className="text-xl font-bold">{category.postsCount.toLocaleString()}</p>
-            <p className="text-xs text-muted-foreground">Posts</p>
+            <p className="text-xs text-muted-foreground">{t("Posts")}</p>
           </div>
           <div className="text-center">
             <p className="text-xl font-bold">{category.creatorsCount.toLocaleString()}</p>
-            <p className="text-xs text-muted-foreground">Creators</p>
+            <p className="text-xs text-muted-foreground">{t("Creators")}</p>
           </div>
           <div className="text-center">
             <p className="text-xl font-bold text-primary">150</p>
-            <p className="text-xs text-muted-foreground">Avg Tokens</p>
+            <p className="text-xs text-muted-foreground">{t("Avg Tokens")}</p>
           </div>
         </div>
 
@@ -92,7 +110,7 @@ export default function Category() {
         <div className="p-4 border-b border-border">
           <h2 className="font-semibold mb-3 flex items-center gap-2">
             <Sparkles className="w-4 h-4 text-primary" />
-            Top Creators in {category.name}
+            {t("Top Creators in")} {category.name}
           </h2>
           <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
             {categoryCreators.map((creator) => (
@@ -115,10 +133,10 @@ export default function Category() {
                       <BadgeCheck className="w-3.5 h-3.5 text-primary fill-primary/20" />
                     )}
                   </div>
-                  <p className="text-xs text-muted-foreground">{creator.followers.toLocaleString()} followers</p>
+                  <p className="text-xs text-muted-foreground">{creator.followers.toLocaleString()} {t("followers")}</p>
                 </div>
                 <Button variant="outline" size="sm" className="text-xs ml-2">
-                  Follow
+                  {t("Follow")}
                 </Button>
               </Link>
             ))}
@@ -133,19 +151,19 @@ export default function Category() {
               className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-4 py-3"
             >
               <TrendingUp className="w-4 h-4 mr-2" />
-              Trending
+              {t("Trending")}
             </TabsTrigger>
             <TabsTrigger 
               value="recent" 
               className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-4 py-3"
             >
-              Recent
+              {t("Recent")}
             </TabsTrigger>
             <TabsTrigger 
               value="top" 
               className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-4 py-3"
             >
-              Top Rated
+              {t("Top Rated")}
             </TabsTrigger>
           </TabsList>
 
@@ -159,10 +177,10 @@ export default function Category() {
             ) : (
               <div className="py-16 text-center">
                 <FileText className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
-                <h3 className="font-semibold mb-1">No Posts Yet</h3>
-                <p className="text-sm text-muted-foreground">Be the first to post in {category.name}!</p>
+                <h3 className="font-semibold mb-1">{t("No Posts Yet")}</h3>
+                <p className="text-sm text-muted-foreground">{t("Be the first to post in")} {category.name}!</p>
                 <Link to="/create">
-                  <Button variant="glow" className="mt-4">Create Post</Button>
+                  <Button variant="glow" className="mt-4">{t("Create Post")}</Button>
                 </Link>
               </div>
             )}

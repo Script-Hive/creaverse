@@ -19,6 +19,7 @@ import {
   Copy,
   RefreshCw
 } from "lucide-react";
+import { useAutoTranslate } from "@/hooks/useTranslation";
 
 const aiTools = [
   {
@@ -57,9 +58,34 @@ export default function AITools() {
   const [output, setOutput] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
 
+  const { t } = useAutoTranslate([
+    "AI-Powered Tools",
+    "Create with AI",
+    "Leverage advanced AI to generate content, optimize prompts, and brainstorm ideas for your creative projects",
+    "Text Generation",
+    "Generate proposals, content, and documentation",
+    "Prompt Assistant",
+    "Optimize your AI queries for better results",
+    "Image Prompt Generator",
+    "Create detailed prompts for visual content",
+    "Idea Generator",
+    "Brainstorm creative concepts and projects",
+    "Enter your prompt below and let AI assist you",
+    "Enter your prompt here... (e.g., 'Write a proposal for community events')",
+    "Generating...",
+    "Generate",
+    "AI Generated",
+    "Copy",
+    "Select a Tool to Get Started",
+    "Choose one of the AI tools above to begin creating",
+    "Please enter a prompt",
+    "Content generated!",
+    "Copied to clipboard!"
+  ]);
+
   const handleGenerate = async () => {
     if (!input.trim()) {
-      toast.error("Please enter a prompt");
+      toast.error(t("Please enter a prompt"));
       return;
     }
 
@@ -78,12 +104,12 @@ export default function AITools() {
 
     setOutput(responses[selectedTool || "text-gen"] || responses["text-gen"]);
     setIsGenerating(false);
-    toast.success("Content generated!");
+    toast.success(t("Content generated!"));
   };
 
   const handleCopy = () => {
     navigator.clipboard.writeText(output);
-    toast.success("Copied to clipboard!");
+    toast.success(t("Copied to clipboard!"));
   };
 
   const handleClear = () => {
@@ -98,11 +124,11 @@ export default function AITools() {
         <div className="text-center mb-8">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-4">
             <Brain className="w-5 h-5 text-primary" />
-            <span className="text-sm font-medium">AI-Powered Tools</span>
+            <span className="text-sm font-medium">{t("AI-Powered Tools")}</span>
           </div>
-          <h1 className="text-3xl font-bold mb-2">Create with AI</h1>
+          <h1 className="text-3xl font-bold mb-2">{t("Create with AI")}</h1>
           <p className="text-muted-foreground max-w-lg mx-auto">
-            Leverage advanced AI to generate content, optimize prompts, and brainstorm ideas for your creative projects
+            {t("Leverage advanced AI to generate content, optimize prompts, and brainstorm ideas for your creative projects")}
           </p>
         </div>
 
@@ -125,8 +151,8 @@ export default function AITools() {
                 <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${tool.color} flex items-center justify-center mb-3`}>
                   <Icon className="w-5 h-5 text-white" />
                 </div>
-                <h3 className="font-semibold text-sm mb-1">{tool.title}</h3>
-                <p className="text-xs text-muted-foreground">{tool.description}</p>
+                <h3 className="font-semibold text-sm mb-1">{t(tool.title)}</h3>
+                <p className="text-xs text-muted-foreground">{t(tool.description)}</p>
               </button>
             );
           })}
@@ -138,10 +164,10 @@ export default function AITools() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Sparkles className="w-5 h-5 text-primary" />
-                {aiTools.find(t => t.id === selectedTool)?.title}
+                {t(aiTools.find(tool => tool.id === selectedTool)?.title || "")}
               </CardTitle>
               <CardDescription>
-                Enter your prompt below and let AI assist you
+                {t("Enter your prompt below and let AI assist you")}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -150,7 +176,7 @@ export default function AITools() {
                 <Textarea
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
-                  placeholder="Enter your prompt here... (e.g., 'Write a proposal for community events')"
+                  placeholder={t("Enter your prompt here... (e.g., 'Write a proposal for community events')")}
                   className="min-h-[120px] resize-none"
                 />
               </div>
@@ -166,12 +192,12 @@ export default function AITools() {
                   {isGenerating ? (
                     <>
                       <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin mr-2" />
-                      Generating...
+                      {t("Generating...")}
                     </>
                   ) : (
                     <>
                       <Send className="w-4 h-4 mr-2" />
-                      Generate
+                      {t("Generate")}
                     </>
                   )}
                 </Button>
@@ -186,11 +212,11 @@ export default function AITools() {
                   <div className="flex items-center justify-between mb-3">
                     <Badge variant="outline" className="text-xs">
                       <Sparkles className="w-3 h-3 mr-1" />
-                      AI Generated
+                      {t("AI Generated")}
                     </Badge>
                     <Button variant="ghost" size="sm" onClick={handleCopy}>
                       <Copy className="w-4 h-4 mr-1" />
-                      Copy
+                      {t("Copy")}
                     </Button>
                   </div>
                   <div className="prose prose-sm dark:prose-invert max-w-none">
@@ -209,9 +235,9 @@ export default function AITools() {
           <Card className="border-dashed">
             <CardContent className="py-12 text-center">
               <Brain className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
-              <h3 className="font-semibold mb-2">Select a Tool to Get Started</h3>
+              <h3 className="font-semibold mb-2">{t("Select a Tool to Get Started")}</h3>
               <p className="text-sm text-muted-foreground">
-                Choose one of the AI tools above to begin creating
+                {t("Choose one of the AI tools above to begin creating")}
               </p>
             </CardContent>
           </Card>
