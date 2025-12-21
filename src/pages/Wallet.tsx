@@ -1,3 +1,4 @@
+import { forwardRef } from "react";
 import { AppLayout } from "@/components/layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -284,33 +285,37 @@ export default function Wallet() {
   );
 }
 
-function TransactionItem({ transaction }: { transaction: Transaction }) {
-  const isPositive = transaction.type === "earned" || transaction.type === "received";
-  const Icon = transaction.icon;
+const TransactionItem = forwardRef<HTMLDivElement, { transaction: Transaction }>(
+  ({ transaction }, ref) => {
+    const isPositive = transaction.type === "earned" || transaction.type === "received";
+    const Icon = transaction.icon;
 
-  return (
-    <div className="flex items-center gap-4 p-4 hover:bg-muted/50 transition-colors">
-      <div className={cn(
-        "w-10 h-10 rounded-full flex items-center justify-center",
-        isPositive ? "bg-success/10" : "bg-destructive/10"
-      )}>
-        <Icon className={cn(
-          "w-5 h-5",
+    return (
+      <div ref={ref} className="flex items-center gap-4 p-4 hover:bg-muted/50 transition-colors">
+        <div className={cn(
+          "w-10 h-10 rounded-full flex items-center justify-center",
+          isPositive ? "bg-success/10" : "bg-destructive/10"
+        )}>
+          <Icon className={cn(
+            "w-5 h-5",
+            isPositive ? "text-success" : "text-destructive"
+          )} />
+        </div>
+        
+        <div className="flex-1 min-w-0">
+          <p className="font-medium text-sm truncate">{transaction.reason}</p>
+          <p className="text-xs text-muted-foreground">{timeAgo(transaction.timestamp)}</p>
+        </div>
+
+        <div className={cn(
+          "text-right font-semibold",
           isPositive ? "text-success" : "text-destructive"
-        )} />
+        )}>
+          {isPositive ? "+" : "-"}{transaction.amount} CVT
+        </div>
       </div>
-      
-      <div className="flex-1 min-w-0">
-        <p className="font-medium text-sm truncate">{transaction.reason}</p>
-        <p className="text-xs text-muted-foreground">{timeAgo(transaction.timestamp)}</p>
-      </div>
+    );
+  }
+);
 
-      <div className={cn(
-        "text-right font-semibold",
-        isPositive ? "text-success" : "text-destructive"
-      )}>
-        {isPositive ? "+" : "-"}{transaction.amount} CVT
-      </div>
-    </div>
-  );
-}
+TransactionItem.displayName = "TransactionItem";
