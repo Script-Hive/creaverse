@@ -69,10 +69,10 @@ export default function Landing() {
           </div>
 
           <div className="flex items-center gap-3">
-            <Link to="/dashboard">
+            <Link to="/feed">
               <Button variant="ghost" size="sm">Sign In</Button>
             </Link>
-            <Link to="/dashboard">
+            <Link to="/feed">
               <Button variant="glow" size="sm">Launch App</Button>
             </Link>
           </div>
@@ -113,13 +113,13 @@ export default function Landing() {
 
             {/* CTAs */}
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 fade-in-up stagger-3">
-              <Link to="/dashboard">
+              <Link to="/feed">
                 <Button variant="hero" size="xl">
                   Enter Creaverse
                   <ArrowRight className="w-5 h-5" />
                 </Button>
               </Link>
-              <Link to="/governance">
+              <Link to="/explore">
                 <Button variant="hero-outline" size="xl">
                   Explore Governance
                 </Button>
@@ -207,7 +207,7 @@ export default function Landing() {
                 ))}
               </div>
 
-              <Link to="/ai-tools" className="inline-block mt-8">
+              <Link to="/explore" className="inline-block mt-8">
                 <Button variant="gradient">
                   Try AI Tools
                   <ArrowRight className="w-4 h-4" />
@@ -273,7 +273,7 @@ export default function Landing() {
               </p>
               
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                <Link to="/dashboard">
+                <Link to="/feed">
                   <Button variant="hero">
                     Get Started Now
                     <ArrowRight className="w-5 h-5" />
