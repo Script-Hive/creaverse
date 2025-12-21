@@ -19,6 +19,8 @@ export interface User {
   reputation: number;
   joinedAt: Date;
   categories: ContentCategory[];
+  walletAddress?: string;
+  email?: string;
 }
 
 export interface Post {
