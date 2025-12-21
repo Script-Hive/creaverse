@@ -1,9 +1,11 @@
+import { useMemo } from "react";
 import { AppLayout } from "@/components/layout";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
 import { currentUser } from "@/data/mockData";
 import { useSettings, languageOptions } from "@/contexts/SettingsContext";
+import { useAutoTranslate } from "@/hooks/useTranslation";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { 
@@ -18,7 +20,8 @@ import {
   ExternalLink,
   Sparkles,
   Shield,
-  FileText
+  FileText,
+  Loader2
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -36,8 +39,21 @@ export default function Settings() {
   } = useSettings();
   const navigate = useNavigate();
 
+  // Texts to translate with AI
+  const textsToTranslate = useMemo(() => [
+    "Customize your app experience",
+    "Successfully logged out",
+    "Light mode activated",
+    "Dark mode activated",
+    "Notifications disabled",
+    "Notifications enabled",
+    "All rights reserved.",
+  ], []);
+
+  const { t: aiT, isLoading: isTranslating } = useAutoTranslate(textsToTranslate);
+
   const handleLogout = () => {
-    toast.success(language === 'mr' ? 'यशस्वीरित्या लॉगआउट केले' : 'Successfully logged out');
+    toast.success(aiT("Successfully logged out"));
     navigate('/');
   };
 
@@ -45,8 +61,8 @@ export default function Settings() {
     setTheme(theme === 'dark' ? 'light' : 'dark');
     toast.success(
       theme === 'dark' 
-        ? (language === 'mr' ? 'लाइट मोड सक्रिय' : 'Light mode activated')
-        : (language === 'mr' ? 'डार्क मोड सक्रिय' : 'Dark mode activated')
+        ? aiT("Light mode activated")
+        : aiT("Dark mode activated")
     );
   };
 
@@ -54,8 +70,8 @@ export default function Settings() {
     setNotificationsEnabled(!notificationsEnabled);
     toast.success(
       notificationsEnabled 
-        ? (language === 'mr' ? 'सूचना बंद' : 'Notifications disabled')
-        : (language === 'mr' ? 'सूचना चालू' : 'Notifications enabled')
+        ? aiT("Notifications disabled")
+        : aiT("Notifications enabled")
     );
   };
 
@@ -64,9 +80,12 @@ export default function Settings() {
       <div className="max-w-2xl mx-auto py-6 px-4 lg:px-6">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-2xl font-bold text-gradient-primary mb-2">{t('settings')}</h1>
+          <div className="flex items-center gap-2">
+            <h1 className="text-2xl font-bold text-gradient-primary mb-2">{t('settings')}</h1>
+            {isTranslating && <Loader2 className="w-4 h-4 animate-spin text-primary" />}
+          </div>
           <p className="text-muted-foreground text-sm">
-            {language === 'mr' ? 'तुमचे अॅप अनुभव कस्टमाइझ करा' : 'Customize your app experience'}
+            {aiT("Customize your app experience")}
           </p>
         </div>
 
@@ -232,7 +251,7 @@ export default function Settings() {
             <span className="font-semibold text-sm">Creaverse DAO</span>
           </div>
           <p className="text-xs text-muted-foreground">
-            © 2024 Creaverse. {language === 'mr' ? 'सर्व हक्क राखीव.' : 'All rights reserved.'}
+            © 2024 Creaverse. {aiT("All rights reserved.")}
           </p>
         </div>
       </div>
