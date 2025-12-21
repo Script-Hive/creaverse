@@ -1,3 +1,4 @@
+import { forwardRef } from "react";
 import { AppLayout } from "@/components/layout";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -116,61 +117,68 @@ const timeAgo = (date: Date): string => {
   return date.toLocaleDateString();
 };
 
-function ActivityItem({ activity }: { activity: Activity }) {
-  const Icon = getActivityIcon(activity.type);
-  
-  return (
-    <div className={cn(
-      "flex items-start gap-3 p-4 transition-colors hover:bg-muted/50",
-      !activity.isRead && "bg-primary/5"
-    )}>
-      <div className="relative">
-        <Avatar className="w-12 h-12">
-          <AvatarFallback className="bg-gradient-to-br from-primary to-accent text-white">
-            {activity.user.displayName.charAt(0)}
-          </AvatarFallback>
-        </Avatar>
-        <div className={cn(
-          "absolute -bottom-1 -right-1 w-6 h-6 rounded-full flex items-center justify-center",
-          getActivityColor(activity.type)
-        )}>
-          <Icon className="w-3 h-3" />
+const ActivityItem = forwardRef<HTMLDivElement, { activity: Activity }>(
+  ({ activity }, ref) => {
+    const Icon = getActivityIcon(activity.type);
+    
+    return (
+      <div 
+        ref={ref}
+        className={cn(
+          "flex items-start gap-3 p-4 transition-colors hover:bg-muted/50",
+          !activity.isRead && "bg-primary/5"
+        )}
+      >
+        <div className="relative">
+          <Avatar className="w-12 h-12">
+            <AvatarFallback className="bg-gradient-to-br from-primary to-accent text-white">
+              {activity.user.displayName.charAt(0)}
+            </AvatarFallback>
+          </Avatar>
+          <div className={cn(
+            "absolute -bottom-1 -right-1 w-6 h-6 rounded-full flex items-center justify-center",
+            getActivityColor(activity.type)
+          )}>
+            <Icon className="w-3 h-3" />
+          </div>
         </div>
+
+        <div className="flex-1 min-w-0">
+          <p className="text-sm">
+            <span className="font-semibold">{activity.user.displayName}</span>
+            {activity.user.isVerified && (
+              <BadgeCheck className="w-3.5 h-3.5 text-primary fill-primary/20 inline ml-1" />
+            )}
+            <span className="text-muted-foreground ml-1">{activity.message}</span>
+          </p>
+          <p className="text-xs text-muted-foreground mt-0.5">
+            {timeAgo(activity.timestamp)}
+          </p>
+        </div>
+
+        {activity.postPreview && (
+          <img 
+            src={activity.postPreview} 
+            alt="" 
+            className="w-12 h-12 rounded-lg object-cover"
+          />
+        )}
+
+        {activity.type === "follow" && (
+          <Button size="sm" variant="outline">
+            Follow Back
+          </Button>
+        )}
+
+        {!activity.isRead && (
+          <div className="w-2 h-2 rounded-full bg-primary flex-shrink-0" />
+        )}
       </div>
+    );
+  }
+);
 
-      <div className="flex-1 min-w-0">
-        <p className="text-sm">
-          <span className="font-semibold">{activity.user.displayName}</span>
-          {activity.user.isVerified && (
-            <BadgeCheck className="w-3.5 h-3.5 text-primary fill-primary/20 inline ml-1" />
-          )}
-          <span className="text-muted-foreground ml-1">{activity.message}</span>
-        </p>
-        <p className="text-xs text-muted-foreground mt-0.5">
-          {timeAgo(activity.timestamp)}
-        </p>
-      </div>
-
-      {activity.postPreview && (
-        <img 
-          src={activity.postPreview} 
-          alt="" 
-          className="w-12 h-12 rounded-lg object-cover"
-        />
-      )}
-
-      {activity.type === "follow" && (
-        <Button size="sm" variant="outline">
-          Follow Back
-        </Button>
-      )}
-
-      {!activity.isRead && (
-        <div className="w-2 h-2 rounded-full bg-primary flex-shrink-0" />
-      )}
-    </div>
-  );
-}
+ActivityItem.displayName = "ActivityItem";
 
 export default function Activity() {
   const unreadCount = mockActivities.filter(a => !a.isRead).length;
