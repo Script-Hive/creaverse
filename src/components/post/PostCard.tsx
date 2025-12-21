@@ -1,3 +1,4 @@
+import { forwardRef } from "react";
 import { Post } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -22,7 +23,7 @@ interface PostCardProps {
   post: Post;
 }
 
-export function PostCard({ post }: PostCardProps) {
+export const PostCard = forwardRef<HTMLElement, PostCardProps>(({ post }, ref) => {
   const [isLiked, setIsLiked] = useState(post.isLiked);
   const [isSaved, setIsSaved] = useState(post.isSaved);
   const [likes, setLikes] = useState(post.likes);
@@ -206,4 +207,6 @@ export function PostCard({ post }: PostCardProps) {
       )}
     </article>
   );
-}
+});
+
+PostCard.displayName = "PostCard";
