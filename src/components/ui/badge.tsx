@@ -8,10 +8,25 @@ const badgeVariants = cva(
   {
     variants: {
       variant: {
-        default: "border-transparent bg-primary text-primary-foreground hover:bg-primary/80",
-        secondary: "border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80",
-        destructive: "border-transparent bg-destructive text-destructive-foreground hover:bg-destructive/80",
-        outline: "text-foreground",
+        default: "border-transparent bg-primary text-primary-foreground",
+        secondary: "border-transparent bg-secondary text-secondary-foreground",
+        destructive: "border-transparent bg-destructive text-destructive-foreground",
+        outline: "border-border text-foreground",
+        // Custom DAO variants
+        success: "border-transparent bg-success text-success-foreground",
+        warning: "border-transparent bg-warning text-warning-foreground",
+        accent: "border-transparent bg-accent text-accent-foreground",
+        glow: "border-primary/50 bg-primary/20 text-primary shadow-sm shadow-primary/20",
+        "glow-accent": "border-accent/50 bg-accent/20 text-accent shadow-sm shadow-accent/20",
+        "glow-secondary": "border-secondary/50 bg-secondary/20 text-secondary shadow-sm shadow-secondary/20",
+        glass: "glass border-border/50 text-foreground",
+        gradient: "border-0 bg-gradient-primary text-primary-foreground",
+        // Status badges
+        active: "border-success/50 bg-success/20 text-success",
+        pending: "border-warning/50 bg-warning/20 text-warning",
+        passed: "border-primary/50 bg-primary/20 text-primary",
+        rejected: "border-destructive/50 bg-destructive/20 text-destructive",
+        draft: "border-muted-foreground/50 bg-muted text-muted-foreground",
       },
     },
     defaultVariants: {
