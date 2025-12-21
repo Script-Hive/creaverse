@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -14,6 +15,7 @@ import {
   ChevronRight,
   Star
 } from "lucide-react";
+import { useTranslateTexts } from "@/components/ui/translatable-text";
 
 const features = [
   {
@@ -50,6 +52,38 @@ const stats = [
 ];
 
 export default function Landing() {
+  // All texts to translate
+  const textsToTranslate = useMemo(() => [
+    "Features", "Community", "Governance", "Sign In", "Launch App",
+    "AI + DAO + Creative Community",
+    "Create. Govern.", "Build the Future.",
+    "Join the decentralized creative ecosystem where AI accelerates your ideas, community shapes decisions, and contributions are rewarded.",
+    "Enter Creaverse", "Explore Governance",
+    "Active Members", "Proposals Passed", "Treasury Value", "Projects Created",
+    "Everything You Need to", "Create & Govern",
+    "A complete ecosystem for creators, innovators, and community builders.",
+    "AI-Powered Creation", "Generate content, refine prompts, and build projects with intelligent AI assistance.",
+    "DAO Governance", "Propose ideas, vote on decisions, and shape the future of our creative ecosystem.",
+    "Community Hub", "Connect with creators, share your work, and collaborate on groundbreaking projects.",
+    "Earn Rewards", "Get recognized for your contributions with reputation points, badges, and rewards.",
+    "AI-Powered", "Create with", "AI Assistance",
+    "Our intelligent AI tools help you generate content, craft perfect prompts, and guide you through complex projects step by step.",
+    "Text Generation for proposals, docs & content",
+    "Prompt Assistant to optimize your AI queries",
+    "Project Co-pilot for guided creation",
+    "Image Prompt Generator for visual concepts",
+    "Try AI Tools", "You",
+    "Help me write a proposal for community events",
+    "I'll help you craft a compelling proposal. Let's start with your goals...",
+    "Powered by Advanced AI",
+    "Ready to Join the", "Creative Revolution",
+    "Be part of a community that's redefining how creators collaborate, govern, and build together.",
+    "Get Started Now",
+    "All rights reserved.", "Discord", "Twitter", "GitHub",
+  ], []);
+
+  const { t } = useTranslateTexts(textsToTranslate);
+
   return (
     <div className="min-h-screen bg-background overflow-hidden">
       {/* Navigation */}
@@ -63,17 +97,17 @@ export default function Landing() {
           </Link>
 
           <div className="hidden md:flex items-center gap-8">
-            <a href="#features" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Features</a>
-            <a href="#community" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Community</a>
-            <a href="#governance" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Governance</a>
+            <a href="#features" className="text-sm text-muted-foreground hover:text-foreground transition-colors">{t("Features")}</a>
+            <a href="#community" className="text-sm text-muted-foreground hover:text-foreground transition-colors">{t("Community")}</a>
+            <a href="#governance" className="text-sm text-muted-foreground hover:text-foreground transition-colors">{t("Governance")}</a>
           </div>
 
           <div className="flex items-center gap-3">
             <Link to="/auth">
-              <Button variant="ghost" size="sm">Sign In</Button>
+              <Button variant="ghost" size="sm">{t("Sign In")}</Button>
             </Link>
             <Link to="/feed">
-              <Button variant="glow" size="sm">Launch App</Button>
+              <Button variant="glow" size="sm">{t("Launch App")}</Button>
             </Link>
           </div>
         </div>
@@ -96,32 +130,31 @@ export default function Landing() {
             {/* Badge */}
             <Badge variant="glow" className="mb-6 fade-in-up">
               <Zap className="w-3 h-3 mr-1" />
-              AI + DAO + Creative Community
+              {t("AI + DAO + Creative Community")}
             </Badge>
 
             {/* Headline */}
             <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 fade-in-up stagger-1">
-              Create. Govern.
-              <span className="block text-gradient-primary">Build the Future.</span>
+              {t("Create. Govern.")}
+              <span className="block text-gradient-primary">{t("Build the Future.")}</span>
             </h1>
 
             {/* Subheadline */}
             <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-8 fade-in-up stagger-2">
-              Join the decentralized creative ecosystem where AI accelerates your ideas, 
-              community shapes decisions, and contributions are rewarded.
+              {t("Join the decentralized creative ecosystem where AI accelerates your ideas, community shapes decisions, and contributions are rewarded.")}
             </p>
 
             {/* CTAs */}
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 fade-in-up stagger-3">
               <Link to="/feed">
                 <Button variant="hero" size="xl">
-                  Enter Creaverse
+                  {t("Enter Creaverse")}
                   <ArrowRight className="w-5 h-5" />
                 </Button>
               </Link>
               <Link to="/governance">
                 <Button variant="hero-outline" size="xl">
-                  Explore Governance
+                  {t("Explore Governance")}
                 </Button>
               </Link>
             </div>
@@ -131,7 +164,7 @@ export default function Landing() {
               {stats.map((stat, index) => (
                 <div key={index} className="text-center p-4">
                   <p className="text-3xl md:text-4xl font-bold text-gradient-primary">{stat.value}</p>
-                  <p className="text-sm text-muted-foreground mt-1">{stat.label}</p>
+                  <p className="text-sm text-muted-foreground mt-1">{t(stat.label)}</p>
                 </div>
               ))}
             </div>
@@ -143,12 +176,12 @@ export default function Landing() {
       <section id="features" className="py-20 md:py-32 relative">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
-            <Badge variant="outline" className="mb-4">Features</Badge>
+            <Badge variant="outline" className="mb-4">{t("Features")}</Badge>
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              Everything You Need to <span className="text-gradient-primary">Create & Govern</span>
+              {t("Everything You Need to")} <span className="text-gradient-primary">{t("Create & Govern")}</span>
             </h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              A complete ecosystem for creators, innovators, and community builders.
+              {t("A complete ecosystem for creators, innovators, and community builders.")}
             </p>
           </div>
 
@@ -163,8 +196,8 @@ export default function Landing() {
                   <div className={`w-12 h-12 rounded-xl bg-${feature.color}/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
                     <Icon className={`w-6 h-6 text-${feature.color}`} />
                   </div>
-                  <h3 className="text-lg font-semibold mb-2">{feature.title}</h3>
-                  <p className="text-sm text-muted-foreground">{feature.description}</p>
+                  <h3 className="text-lg font-semibold mb-2">{t(feature.title)}</h3>
+                  <p className="text-sm text-muted-foreground">{t(feature.description)}</p>
                 </div>
               );
             })}
@@ -181,14 +214,13 @@ export default function Landing() {
             <div>
               <Badge variant="glow" className="mb-4">
                 <Brain className="w-3 h-3 mr-1" />
-                AI-Powered
+                {t("AI-Powered")}
               </Badge>
               <h2 className="text-3xl md:text-4xl font-bold mb-6">
-                Create with <span className="text-gradient-primary">AI Assistance</span>
+                {t("Create with")} <span className="text-gradient-primary">{t("AI Assistance")}</span>
               </h2>
               <p className="text-muted-foreground mb-8">
-                Our intelligent AI tools help you generate content, craft perfect prompts, 
-                and guide you through complex projects step by step.
+                {t("Our intelligent AI tools help you generate content, craft perfect prompts, and guide you through complex projects step by step.")}
               </p>
 
               <div className="space-y-4">
@@ -202,14 +234,14 @@ export default function Landing() {
                     <div className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center">
                       <ChevronRight className="w-4 h-4 text-primary" />
                     </div>
-                    <span className="text-sm">{item}</span>
+                    <span className="text-sm">{t(item)}</span>
                   </div>
                 ))}
               </div>
 
               <Link to="/ai-tools" className="inline-block mt-8">
                 <Button variant="gradient">
-                  Try AI Tools
+                  {t("Try AI Tools")}
                   <ArrowRight className="w-4 h-4" />
                 </Button>
               </Link>
@@ -221,10 +253,10 @@ export default function Landing() {
                 <div className="space-y-4">
                   <div className="flex items-start gap-3">
                     <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center flex-shrink-0">
-                      <span className="text-xs font-medium">You</span>
+                      <span className="text-xs font-medium">{t("You")}</span>
                     </div>
                     <div className="flex-1 p-3 rounded-lg bg-muted/50 text-sm">
-                      Help me write a proposal for community events
+                      {t("Help me write a proposal for community events")}
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
@@ -232,7 +264,7 @@ export default function Landing() {
                       <Brain className="w-4 h-4 text-primary" />
                     </div>
                     <div className="flex-1 p-3 rounded-lg bg-primary/10 border border-primary/20 text-sm">
-                      I'll help you craft a compelling proposal. Let's start with your goals...
+                      {t("I'll help you craft a compelling proposal. Let's start with your goals...")}
                       <span className="inline-block w-2 h-4 bg-primary ml-1 animate-pulse" />
                     </div>
                   </div>
@@ -246,7 +278,7 @@ export default function Landing() {
               {/* Floating badge */}
               <div className="absolute -top-4 -right-4 px-4 py-2 rounded-full bg-card border border-border shadow-lg flex items-center gap-2">
                 <Star className="w-4 h-4 text-warning" />
-                <span className="text-sm font-medium">Powered by Advanced AI</span>
+                <span className="text-sm font-medium">{t("Powered by Advanced AI")}</span>
               </div>
             </div>
           </div>
@@ -265,17 +297,16 @@ export default function Landing() {
               </div>
               
               <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                Ready to Join the <span className="text-gradient-primary">Creative Revolution</span>?
+                {t("Ready to Join the")} <span className="text-gradient-primary">{t("Creative Revolution")}</span>?
               </h2>
               <p className="text-muted-foreground mb-8 max-w-xl mx-auto">
-                Be part of a community that's redefining how creators collaborate, 
-                govern, and build together.
+                {t("Be part of a community that's redefining how creators collaborate, govern, and build together.")}
               </p>
               
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                 <Link to="/feed">
                   <Button variant="hero">
-                    Get Started Now
+                    {t("Get Started Now")}
                     <ArrowRight className="w-5 h-5" />
                   </Button>
                 </Link>
@@ -297,13 +328,13 @@ export default function Landing() {
             </div>
             
             <p className="text-sm text-muted-foreground">
-              © 2024 Creaverse DAO. All rights reserved.
+              © 2024 Creaverse DAO. {t("All rights reserved.")}
             </p>
 
             <div className="flex items-center gap-6">
-              <a href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Discord</a>
-              <a href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Twitter</a>
-              <a href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors">GitHub</a>
+              <a href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors">{t("Discord")}</a>
+              <a href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors">{t("Twitter")}</a>
+              <a href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors">{t("GitHub")}</a>
             </div>
           </div>
         </div>

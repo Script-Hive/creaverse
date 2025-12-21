@@ -1,4 +1,4 @@
-import { forwardRef } from "react";
+import { forwardRef, useMemo } from "react";
 import { Post } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -18,6 +18,7 @@ import { cn } from "@/lib/utils";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { getCategoryGradient } from "@/data/categories";
+import { TranslatableText, useTranslateTexts } from "@/components/ui/translatable-text";
 
 interface PostCardProps {
   post: Post;
@@ -28,6 +29,22 @@ export const PostCard = forwardRef<HTMLElement, PostCardProps>(({ post }, ref) =
   const [isSaved, setIsSaved] = useState(post.isSaved);
   const [likes, setLikes] = useState(post.likes);
   const [showFullContent, setShowFullContent] = useState(false);
+
+  // Texts to translate
+  const textsToTranslate = useMemo(() => [
+    "tokens",
+    "reviews",
+    "Review",
+    "likes",
+    "more",
+    "View all",
+    "comments",
+    "Just now",
+    post.content,
+    post.category.charAt(0).toUpperCase() + post.category.slice(1),
+  ], [post.content, post.category]);
+
+  const { t } = useTranslateTexts(textsToTranslate);
 
   const handleLike = () => {
     setIsLiked(!isLiked);
@@ -46,16 +63,18 @@ export const PostCard = forwardRef<HTMLElement, PostCardProps>(({ post }, ref) =
 
   const timeAgo = (date: Date): string => {
     const seconds = Math.floor((new Date().getTime() - date.getTime()) / 1000);
-    if (seconds < 60) return "Just now";
+    if (seconds < 60) return t("Just now");
     if (seconds < 3600) return `${Math.floor(seconds / 60)}m`;
+    if (seconds < 3600) return `${Math.floor(seconds / 3600)}h`;
     if (seconds < 86400) return `${Math.floor(seconds / 3600)}h`;
     if (seconds < 604800) return `${Math.floor(seconds / 86400)}d`;
     return date.toLocaleDateString();
   };
 
-  const contentPreview = post.content.length > 150 && !showFullContent
-    ? post.content.slice(0, 150) + "..."
-    : post.content;
+  const translatedContent = t(post.content);
+  const contentPreview = translatedContent.length > 150 && !showFullContent
+    ? translatedContent.slice(0, 150) + "..."
+    : translatedContent;
 
   return (
     <article className="bg-card border-b border-border">
@@ -87,7 +106,7 @@ export const PostCard = forwardRef<HTMLElement, PostCardProps>(({ post }, ref) =
           {post.isTokenized && (
             <Badge variant="glow" className="text-[10px] px-2 py-0.5">
               <Coins className="w-3 h-3 mr-1" />
-              {post.tokenReward} tokens
+              {post.tokenReward} {t("tokens")}
             </Badge>
           )}
           <Button variant="ghost" size="icon-sm">
@@ -121,7 +140,7 @@ export const PostCard = forwardRef<HTMLElement, PostCardProps>(({ post }, ref) =
                 getCategoryGradient(post.category)
               )}
             >
-              {post.category.charAt(0).toUpperCase() + post.category.slice(1)}
+              {t(post.category.charAt(0).toUpperCase() + post.category.slice(1))}
             </Badge>
           </div>
 
@@ -130,7 +149,7 @@ export const PostCard = forwardRef<HTMLElement, PostCardProps>(({ post }, ref) =
             <div className="absolute bottom-3 right-3">
               <Badge variant="glass" className="text-xs backdrop-blur-md">
                 <Star className="w-3 h-3 mr-1 text-warning fill-warning" />
-                {post.reviews} reviews
+                {post.reviews} {t("reviews")}
               </Badge>
             </div>
           )}
@@ -160,7 +179,7 @@ export const PostCard = forwardRef<HTMLElement, PostCardProps>(({ post }, ref) =
           <Link to={`/post/${post.id}/review`}>
             <Button variant="outline" size="sm" className="text-xs">
               <Star className="w-4 h-4 mr-1" />
-              Review
+              {t("Review")}
             </Button>
           </Link>
           <Button 
@@ -176,7 +195,7 @@ export const PostCard = forwardRef<HTMLElement, PostCardProps>(({ post }, ref) =
 
       {/* Stats */}
       <div className="px-4 pb-2">
-        <p className="text-sm font-semibold">{formatNumber(likes)} likes</p>
+        <p className="text-sm font-semibold">{formatNumber(likes)} {t("likes")}</p>
       </div>
 
       {/* Content */}
@@ -186,12 +205,12 @@ export const PostCard = forwardRef<HTMLElement, PostCardProps>(({ post }, ref) =
             {post.author.username}
           </Link>
           {contentPreview}
-          {post.content.length > 150 && !showFullContent && (
+          {translatedContent.length > 150 && !showFullContent && (
             <button 
               onClick={() => setShowFullContent(true)}
               className="text-muted-foreground ml-1 hover:text-foreground"
             >
-              more
+              {t("more")}
             </button>
           )}
         </p>
@@ -201,7 +220,7 @@ export const PostCard = forwardRef<HTMLElement, PostCardProps>(({ post }, ref) =
       {post.comments > 0 && (
         <Link to={`/post/${post.id}`} className="block px-4 pb-4">
           <p className="text-sm text-muted-foreground">
-            View all {formatNumber(post.comments)} comments
+            {t("View all")} {formatNumber(post.comments)} {t("comments")}
           </p>
         </Link>
       )}
