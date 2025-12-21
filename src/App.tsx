@@ -18,6 +18,13 @@ import Dashboard from "./pages/Dashboard";
 import Settings from "./pages/Settings";
 import Admin from "./pages/Admin";
 import Governance from "./pages/Governance";
+import PostDetail from "./pages/PostDetail";
+import Review from "./pages/Review";
+import CreateProposal from "./pages/CreateProposal";
+import ProposalDetail from "./pages/ProposalDetail";
+import AITools from "./pages/AITools";
+import Projects from "./pages/Projects";
+import Messages from "./pages/Messages";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -42,10 +49,17 @@ const App = () => (
               <Route path="/wallet" element={<Wallet />} />
               <Route path="/rewards" element={<Rewards />} />
               <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/settings" element={<Settings />} />
-            <Route path="/admin" element={<Admin />} />
-            <Route path="/governance" element={<Governance />} />
-            <Route path="*" element={<NotFound />} />
+              <Route path="/settings" element={<Settings />} />
+              <Route path="/admin" element={<Admin />} />
+              <Route path="/governance" element={<Governance />} />
+              <Route path="/governance/create" element={<CreateProposal />} />
+              <Route path="/governance/:id" element={<ProposalDetail />} />
+              <Route path="/post/:id" element={<PostDetail />} />
+              <Route path="/post/:id/review" element={<Review />} />
+              <Route path="/ai-tools" element={<AITools />} />
+              <Route path="/projects" element={<Projects />} />
+              <Route path="/messages" element={<Messages />} />
+              <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>
         </TooltipProvider>
