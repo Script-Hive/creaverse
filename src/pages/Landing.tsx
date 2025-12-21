@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -9,10 +9,12 @@ import {
   Trophy, 
   ArrowRight,
   Zap,
-  Globe
+  Globe,
+  Loader2
 } from "lucide-react";
 import { useTranslateTexts } from "@/components/ui/translatable-text";
 import creaverseLogo from "@/assets/creaverse-logo.png";
+import { useLandingStats, formatNumber, formatCurrency } from "@/hooks/useLandingStats";
 
 const features = [
   {
@@ -41,14 +43,23 @@ const features = [
   },
 ];
 
-const stats = [
-  { value: "10K+", label: "Active Members" },
-  { value: "500+", label: "Proposals Passed" },
-  { value: "$2M+", label: "Treasury Value" },
-  { value: "1K+", label: "Projects Created" },
-];
+// AnimatedCounter component for smooth number transitions
+function AnimatedCounter({ value, prefix = "", suffix = "" }: { value: string; prefix?: string; suffix?: string }) {
+  const [displayValue, setDisplayValue] = useState(value);
+  
+  useEffect(() => {
+    setDisplayValue(value);
+  }, [value]);
+
+  return (
+    <span className="tabular-nums">
+      {prefix}{displayValue}{suffix}
+    </span>
+  );
+}
 
 export default function Landing() {
+  const { data: stats, isLoading } = useLandingStats();
   // All texts to translate
   const textsToTranslate = useMemo(() => [
     "Features", "Community", "Governance", "Sign In", "Launch App",
@@ -167,12 +178,41 @@ export default function Landing() {
 
             {/* Stats */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-16 fade-in-up stagger-5">
-              {stats.map((stat, index) => (
-                <div key={index} className="text-center p-4 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 hover:border-cyan-500/30 transition-colors">
-                  <p className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent">{stat.value}</p>
-                  <p className="text-sm text-muted-foreground mt-1">{t(stat.label)}</p>
-                </div>
-              ))}
+              <div className="text-center p-4 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 hover:border-cyan-500/30 transition-colors">
+                <p className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent">
+                  {isLoading ? <Loader2 className="w-6 h-6 animate-spin mx-auto" /> : (
+                    <AnimatedCounter value={formatNumber(stats?.activeMembers || 0)} suffix="+" />
+                  )}
+                </p>
+                <p className="text-sm text-muted-foreground mt-1">{t("Active Members")}</p>
+              </div>
+              
+              <div className="text-center p-4 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 hover:border-cyan-500/30 transition-colors">
+                <p className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent">
+                  {isLoading ? <Loader2 className="w-6 h-6 animate-spin mx-auto" /> : (
+                    <AnimatedCounter value={String(stats?.proposalsPassed || 0)} suffix="+" />
+                  )}
+                </p>
+                <p className="text-sm text-muted-foreground mt-1">{t("Proposals Passed")}</p>
+              </div>
+              
+              <div className="text-center p-4 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 hover:border-cyan-500/30 transition-colors">
+                <p className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent">
+                  {isLoading ? <Loader2 className="w-6 h-6 animate-spin mx-auto" /> : (
+                    <AnimatedCounter value={formatCurrency(stats?.treasuryValue || 0)} />
+                  )}
+                </p>
+                <p className="text-sm text-muted-foreground mt-1">{t("Treasury Value")}</p>
+              </div>
+              
+              <div className="text-center p-4 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 hover:border-cyan-500/30 transition-colors">
+                <p className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent">
+                  {isLoading ? <Loader2 className="w-6 h-6 animate-spin mx-auto" /> : (
+                    <AnimatedCounter value={formatNumber(stats?.projectsCreated || 0)} suffix="+" />
+                  )}
+                </p>
+                <p className="text-sm text-muted-foreground mt-1">{t("Projects Created")}</p>
+              </div>
             </div>
           </div>
         </div>
