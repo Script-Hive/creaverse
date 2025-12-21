@@ -1,13 +1,18 @@
 import { useState } from "react";
-import { Sidebar, MobileNav } from "./Sidebar";
+import { Sidebar, MobileNav, BottomNav } from "./Sidebar";
 import { cn } from "@/lib/utils";
 
 interface AppLayoutProps {
   children: React.ReactNode;
+  hideNav?: boolean;
 }
 
-export function AppLayout({ children }: AppLayoutProps) {
+export function AppLayout({ children, hideNav = false }: AppLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  if (hideNav) {
+    return <>{children}</>;
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -17,13 +22,16 @@ export function AppLayout({ children }: AppLayoutProps) {
       {/* Sidebar */}
       <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       
+      {/* Bottom Navigation (Mobile) */}
+      <BottomNav />
+      
       {/* Main Content */}
       <main className={cn(
         "min-h-screen transition-all duration-300",
-        "pt-16 lg:pt-0",
+        "pt-14 pb-20 lg:pt-0 lg:pb-0",
         "lg:ml-72"
       )}>
-        <div className="p-4 md:p-6 lg:p-8">
+        <div className="max-w-2xl mx-auto lg:max-w-none lg:px-8">
           {children}
         </div>
       </main>
