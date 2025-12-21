@@ -9,12 +9,13 @@ import { Textarea } from "@/components/ui/textarea";
 import { 
   useProposal, 
   useProposalVotes, 
-  useCastVote,
   useUserVote,
   getTimeRemaining,
   getStatusColor,
   isVotingActive
 } from "@/hooks/useGovernance";
+import { useSecureCastVote } from "@/hooks/useSecureVote";
+import { supabase } from "@/integrations/supabase/client";
 import { useState } from "react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -35,7 +36,7 @@ export default function ProposalDetail() {
   const { id } = useParams<{ id: string }>();
   const { data: proposal, isLoading: proposalLoading } = useProposal(id);
   const { data: votes } = useProposalVotes(id);
-  const castVote = useCastVote();
+  const castVote = useSecureCastVote();
   
   const [voteReason, setVoteReason] = useState("");
   const [selectedVote, setSelectedVote] = useState<"for" | "against" | "abstain" | null>(null);
@@ -43,13 +44,19 @@ export default function ProposalDetail() {
   const handleVote = async (voteType: "for" | "against" | "abstain") => {
     if (!id) return;
     
+    // Check if user is authenticated
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      toast.error("Please sign in to vote");
+      return;
+    }
+    
     try {
+      // Use secure voting function - voting power calculated server-side from token balance
       await castVote.mutateAsync({
         proposal_id: id,
-        user_id: "temp-user-id", // TODO: Replace with actual authenticated user ID
         vote_type: voteType,
         reason: voteReason.trim() || undefined,
-        voting_power: 100, // Mock voting power
       });
       
       toast.success("Vote cast successfully!", {

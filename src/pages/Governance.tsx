@@ -33,7 +33,6 @@ import {
   useProposalVotes,
   useUserVote,
   useCreateProposal,
-  useCastVote,
   useProposalsRealtime,
   getTimeRemaining,
   getStatusColor,
@@ -42,6 +41,8 @@ import {
   type ProposalStatus,
   type VoteType
 } from "@/hooks/useGovernance";
+import { useSecureCastVote } from "@/hooks/useSecureVote";
+import { supabase } from "@/integrations/supabase/client";
 import { useWeb3 } from "@/contexts/Web3Context";
 import { WalletConnectButton } from "@/components/web3/WalletConnectButton";
 import { toast } from "sonner";
@@ -78,7 +79,7 @@ export default function Governance() {
   const { data: userVote } = useUserVote(selectedProposal || undefined, address || undefined);
   
   const createProposal = useCreateProposal();
-  const castVote = useCastVote();
+  const castVote = useSecureCastVote();
 
   // Enable realtime updates
   useProposalsRealtime();
@@ -133,23 +134,23 @@ export default function Governance() {
   };
 
   const handleVote = async () => {
-    if (!address || !selectedProposal || !selectedVoteType) {
-      toast.error("Please connect wallet and select a vote option");
+    if (!selectedProposal || !selectedVoteType) {
+      toast.error("Please select a vote option");
       return;
     }
 
-    const votingPowerNum = parseFloat(votingPower);
-    if (votingPowerNum <= 0) {
-      toast.error("You need CDT tokens to vote");
+    // Check if user is authenticated
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      toast.error("Please sign in to vote");
       return;
     }
 
     try {
+      // Use secure voting function - voting power calculated server-side
       await castVote.mutateAsync({
         proposal_id: selectedProposal,
-        user_id: address,
         vote_type: selectedVoteType,
-        voting_power: votingPowerNum,
         reason: voteReason || undefined,
       });
 
