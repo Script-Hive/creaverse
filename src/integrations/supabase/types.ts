@@ -164,6 +164,113 @@ export type Database = {
         }
         Relationships: []
       }
+      governance_proposals: {
+        Row: {
+          attachments: Json | null
+          created_at: string | null
+          creator_id: string
+          description: string
+          id: string
+          on_chain_proposal_id: string | null
+          pass_threshold_percentage: number
+          proposal_threshold: number
+          quorum_threshold: number
+          status: Database["public"]["Enums"]["proposal_status"]
+          title: string
+          total_voting_power: number
+          tx_hash: string | null
+          updated_at: string | null
+          votes_abstain: number
+          votes_against: number
+          votes_for: number
+          voting_end_date: string
+          voting_start_date: string
+        }
+        Insert: {
+          attachments?: Json | null
+          created_at?: string | null
+          creator_id: string
+          description: string
+          id?: string
+          on_chain_proposal_id?: string | null
+          pass_threshold_percentage?: number
+          proposal_threshold?: number
+          quorum_threshold?: number
+          status?: Database["public"]["Enums"]["proposal_status"]
+          title: string
+          total_voting_power?: number
+          tx_hash?: string | null
+          updated_at?: string | null
+          votes_abstain?: number
+          votes_against?: number
+          votes_for?: number
+          voting_end_date: string
+          voting_start_date: string
+        }
+        Update: {
+          attachments?: Json | null
+          created_at?: string | null
+          creator_id?: string
+          description?: string
+          id?: string
+          on_chain_proposal_id?: string | null
+          pass_threshold_percentage?: number
+          proposal_threshold?: number
+          quorum_threshold?: number
+          status?: Database["public"]["Enums"]["proposal_status"]
+          title?: string
+          total_voting_power?: number
+          tx_hash?: string | null
+          updated_at?: string | null
+          votes_abstain?: number
+          votes_against?: number
+          votes_for?: number
+          voting_end_date?: string
+          voting_start_date?: string
+        }
+        Relationships: []
+      }
+      governance_votes: {
+        Row: {
+          created_at: string | null
+          id: string
+          proposal_id: string
+          reason: string | null
+          tx_hash: string | null
+          user_id: string
+          vote_type: Database["public"]["Enums"]["vote_type"]
+          voting_power: number
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          proposal_id: string
+          reason?: string | null
+          tx_hash?: string | null
+          user_id: string
+          vote_type: Database["public"]["Enums"]["vote_type"]
+          voting_power: number
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          proposal_id?: string
+          reason?: string | null
+          tx_hash?: string | null
+          user_id?: string
+          vote_type?: Database["public"]["Enums"]["vote_type"]
+          voting_power?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "governance_votes_proposal_id_fkey"
+            columns: ["proposal_id"]
+            isOneToOne: false
+            referencedRelation: "governance_proposals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       likes: {
         Row: {
           comment_id: string | null
@@ -669,6 +776,27 @@ export type Database = {
           },
         ]
       }
+      vote_delegations: {
+        Row: {
+          created_at: string | null
+          delegatee_id: string
+          delegator_id: string
+          id: string
+        }
+        Insert: {
+          created_at?: string | null
+          delegatee_id: string
+          delegator_id: string
+          id?: string
+        }
+        Update: {
+          created_at?: string | null
+          delegatee_id?: string
+          delegator_id?: string
+          id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -694,6 +822,12 @@ export type Database = {
         | "token"
         | "mention"
         | "reward"
+      proposal_status:
+        | "pending"
+        | "active"
+        | "passed"
+        | "rejected"
+        | "cancelled"
       transaction_type:
         | "earned"
         | "spent"
@@ -701,6 +835,7 @@ export type Database = {
         | "sent"
         | "staked"
         | "unstaked"
+      vote_type: "for" | "against" | "abstain"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -840,6 +975,7 @@ export const Constants = {
         "mention",
         "reward",
       ],
+      proposal_status: ["pending", "active", "passed", "rejected", "cancelled"],
       transaction_type: [
         "earned",
         "spent",
@@ -848,6 +984,7 @@ export const Constants = {
         "staked",
         "unstaked",
       ],
+      vote_type: ["for", "against", "abstain"],
     },
   },
 } as const
