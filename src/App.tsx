@@ -8,6 +8,11 @@ import Feed from "./pages/Feed";
 import Explore from "./pages/Explore";
 import Profile from "./pages/Profile";
 import Category from "./pages/Category";
+import Create from "./pages/Create";
+import Activity from "./pages/Activity";
+import Wallet from "./pages/Wallet";
+import Rewards from "./pages/Rewards";
+import Dashboard from "./pages/Dashboard";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -25,10 +30,11 @@ const App = () => (
           <Route path="/profile" element={<Profile />} />
           <Route path="/profile/:username" element={<Profile />} />
           <Route path="/category/:id" element={<Category />} />
-          <Route path="/create" element={<Feed />} />
-          <Route path="/activity" element={<Feed />} />
-          <Route path="/wallet" element={<Feed />} />
-          <Route path="/rewards" element={<Feed />} />
+          <Route path="/create" element={<Create />} />
+          <Route path="/activity" element={<Activity />} />
+          <Route path="/wallet" element={<Wallet />} />
+          <Route path="/rewards" element={<Rewards />} />
+          <Route path="/dashboard" element={<Dashboard />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
