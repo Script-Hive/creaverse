@@ -73,9 +73,11 @@ export default function Profile() {
                         <Edit className="w-4 h-4 mr-1" />
                         Edit Profile
                       </Button>
-                      <Button variant="ghost" size="icon-sm">
-                        <Settings className="w-5 h-5" />
-                      </Button>
+                      <Link to="/settings">
+                        <Button variant="ghost" size="icon-sm">
+                          <Settings className="w-5 h-5" />
+                        </Button>
+                      </Link>
                     </>
                   ) : (
                     <>
