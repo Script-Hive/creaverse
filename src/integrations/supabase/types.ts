@@ -802,6 +802,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      calculate_reputation: { Args: { p_user_id: string }; Returns: number }
       cast_governance_vote: {
         Args: {
           p_proposal_id: string
@@ -816,6 +817,10 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      increment_tokens: {
+        Args: { amount: number; user_id: string }
+        Returns: undefined
       }
     }
     Enums: {
