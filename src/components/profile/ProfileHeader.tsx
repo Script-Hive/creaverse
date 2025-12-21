@@ -20,15 +20,27 @@ import { cn } from "@/lib/utils";
 import { User } from "@/types";
 import { getCategoryGradient } from "@/data/categories";
 import { motion, AnimatePresence } from "framer-motion";
+import { CreatorTypeBadge } from "./CreatorTypeBadge";
 
 interface ProfileHeaderProps {
   user: User;
   isOwnProfile: boolean;
+  creatorTypeDisplay?: string;
+  categoryName?: string;
   onFollow?: () => void;
   onMessage?: () => void;
+  onEditProfile?: () => void;
 }
 
-export function ProfileHeader({ user, isOwnProfile, onFollow, onMessage }: ProfileHeaderProps) {
+export function ProfileHeader({ 
+  user, 
+  isOwnProfile, 
+  creatorTypeDisplay,
+  categoryName,
+  onFollow, 
+  onMessage,
+  onEditProfile 
+}: ProfileHeaderProps) {
   const [isFollowing, setIsFollowing] = useState(false);
   const [showFullBio, setShowFullBio] = useState(false);
 
@@ -43,9 +55,9 @@ export function ProfileHeader({ user, isOwnProfile, onFollow, onMessage }: Profi
     onFollow?.();
   };
 
-  const creatorTypeLabel = user.categories?.[0] 
+  const creatorTypeLabel = creatorTypeDisplay || (user.categories?.[0] 
     ? `${user.categories[0].charAt(0).toUpperCase() + user.categories[0].slice(1)} Creator`
-    : 'Creator';
+    : 'Creator');
 
   return (
     <div className="relative">
@@ -109,20 +121,28 @@ export function ProfileHeader({ user, isOwnProfile, onFollow, onMessage }: Profi
               </div>
               
               {/* Creator Type Badge */}
-              <Badge 
-                variant="outline" 
-                className={cn(
-                  "bg-gradient-to-r capitalize px-3 py-1",
-                  user.role === "creator" 
-                    ? "from-primary/20 to-secondary/20 border-primary/30 text-primary"
-                    : user.role === "reviewer"
-                    ? "from-warning/20 to-accent/20 border-warning/30 text-warning"
-                    : "from-muted to-muted border-border"
-                )}
-              >
-                <Sparkles className="w-3 h-3 mr-1" />
-                {creatorTypeLabel}
-              </Badge>
+              {creatorTypeDisplay ? (
+                <CreatorTypeBadge 
+                  creatorTypeDisplay={creatorTypeDisplay}
+                  categoryName={categoryName}
+                  size="md"
+                />
+              ) : (
+                <Badge 
+                  variant="outline" 
+                  className={cn(
+                    "bg-gradient-to-r capitalize px-3 py-1",
+                    user.role === "creator" 
+                      ? "from-primary/20 to-secondary/20 border-primary/30 text-primary"
+                      : user.role === "reviewer"
+                      ? "from-warning/20 to-accent/20 border-warning/30 text-warning"
+                      : "from-muted to-muted border-border"
+                  )}
+                >
+                  <Sparkles className="w-3 h-3 mr-1" />
+                  {creatorTypeLabel}
+                </Badge>
+              )}
             </motion.div>
 
             {/* Username Handle */}
@@ -189,7 +209,7 @@ export function ProfileHeader({ user, isOwnProfile, onFollow, onMessage }: Profi
             >
               {isOwnProfile ? (
                 <>
-                  <Button variant="outline" size="sm" className="gap-2">
+                  <Button variant="outline" size="sm" className="gap-2" onClick={onEditProfile}>
                     <Edit className="w-4 h-4" />
                     Edit Profile
                   </Button>
