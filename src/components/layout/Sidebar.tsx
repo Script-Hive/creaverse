@@ -18,6 +18,7 @@ import {
   Sparkles,
   Bell,
   Settings,
+  Shield,
   LucideIcon
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
@@ -123,11 +124,15 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
             ))}
           </div>
 
-          {/* Wallet & Rewards */}
+          {/* Wallet, Governance & Rewards */}
           <div className="pt-4 mt-4 border-t border-sidebar-border space-y-1">
             <NavLink
               item={{ label: "Wallet", href: "/wallet", icon: Wallet }}
               isActive={location.pathname === "/wallet"}
+            />
+            <NavLink
+              item={{ label: "Governance", href: "/governance", icon: Shield }}
+              isActive={location.pathname === "/governance"}
             />
             <NavLink
               item={{ label: "Rewards", href: "/rewards", icon: Trophy }}
