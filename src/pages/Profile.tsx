@@ -191,9 +191,9 @@ export default function Profile() {
           <WalletSection user={user} isOwnProfile={isOwnProfile} />
         )}
 
-        {/* Tabbed Content */}
+        {/* Tabbed Content - Show only this user's posts */}
         <ProfileTabs 
-          posts={userPosts.length > 0 ? userPosts : mockPosts.slice(0, 6)} 
+          posts={userPosts} 
           isOwnProfile={isOwnProfile}
         />
 
