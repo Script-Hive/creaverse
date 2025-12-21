@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { SettingsProvider } from "@/contexts/SettingsContext";
 import { Web3Provider } from "@/contexts/Web3Context";
+import { AdminRoute } from "@/components/auth/AdminRoute";
 import Landing from "./pages/Landing";
 import Feed from "./pages/Feed";
 import Explore from "./pages/Explore";
@@ -56,7 +57,7 @@ const App = () => (
               <Route path="/rewards" element={<Rewards />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/settings" element={<Settings />} />
-              <Route path="/admin" element={<Admin />} />
+              <Route path="/admin" element={<AdminRoute><Admin /></AdminRoute>} />
               <Route path="/governance" element={<Governance />} />
               <Route path="/governance/create" element={<CreateProposal />} />
               <Route path="/governance/:id" element={<ProposalDetail />} />

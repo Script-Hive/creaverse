@@ -802,6 +802,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      cast_governance_vote: {
+        Args: {
+          p_proposal_id: string
+          p_reason?: string
+          p_vote_type: Database["public"]["Enums"]["vote_type"]
+        }
+        Returns: string
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
