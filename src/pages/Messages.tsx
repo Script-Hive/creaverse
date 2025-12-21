@@ -18,6 +18,7 @@ import {
   Smile,
   BadgeCheck
 } from "lucide-react";
+import { useAutoTranslate } from "@/hooks/useTranslation";
 
 interface Message {
   id: string;
@@ -84,6 +85,22 @@ export default function Messages() {
   const [messageInput, setMessageInput] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
 
+  const { t } = useAutoTranslate([
+    "Messages",
+    "Search messages",
+    "Type a message...",
+    "Online",
+    "Your Messages",
+    "Select a conversation to start messaging",
+    "Hey there! 👋",
+    "Hi! How are you?",
+    "Hey! Love your latest post 🔥",
+    "Thanks for the review!",
+    "Are you coming to the event?",
+    "Let's collaborate on something",
+    "Great work on the proposal!"
+  ]);
+
   const timeAgo = (date: Date): string => {
     const seconds = Math.floor((new Date().getTime() - date.getTime()) / 1000);
     if (seconds < 60) return "Just now";
@@ -115,7 +132,7 @@ export default function Messages() {
           {/* Header */}
           <div className="p-4 border-b border-border">
             <div className="flex items-center justify-between mb-4">
-              <h1 className="text-xl font-bold">Messages</h1>
+              <h1 className="text-xl font-bold">{t("Messages")}</h1>
               <Button variant="ghost" size="icon-sm">
                 <Edit className="w-5 h-5" />
               </Button>
@@ -125,7 +142,7 @@ export default function Messages() {
               <Input
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search messages"
+                placeholder={t("Search messages")}
                 className="pl-10"
               />
             </div>
@@ -169,7 +186,7 @@ export default function Messages() {
                         "text-sm truncate",
                         conv.unreadCount > 0 ? "text-foreground font-medium" : "text-muted-foreground"
                       )}>
-                        {conv.lastMessage}
+                        {t(conv.lastMessage)}
                       </p>
                       {conv.unreadCount > 0 && (
                         <Badge variant="default" className="ml-2 h-5 min-w-[20px] flex items-center justify-center p-0 text-xs">
@@ -213,7 +230,7 @@ export default function Messages() {
                       <BadgeCheck className="w-4 h-4 text-primary fill-primary/20" />
                     )}
                   </div>
-                  <p className="text-xs text-success">Online</p>
+                  <p className="text-xs text-success">{t("Online")}</p>
                 </div>
               </div>
               <div className="flex items-center gap-1">
@@ -248,7 +265,7 @@ export default function Messages() {
                           ? "bg-primary text-primary-foreground rounded-br-sm"
                           : "bg-muted rounded-bl-sm"
                       )}>
-                        <p className="text-sm">{message.content}</p>
+                        <p className="text-sm">{t(message.content)}</p>
                         <p className={cn(
                           "text-[10px] mt-1",
                           isOwn ? "text-primary-foreground/70" : "text-muted-foreground"
@@ -272,7 +289,7 @@ export default function Messages() {
                   <Input
                     value={messageInput}
                     onChange={(e) => setMessageInput(e.target.value)}
-                    placeholder="Type a message..."
+                    placeholder={t("Type a message...")}
                     className="pr-10"
                     onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
                   />
@@ -301,9 +318,9 @@ export default function Messages() {
               <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mx-auto mb-4">
                 <Send className="w-8 h-8 text-muted-foreground" />
               </div>
-              <h3 className="font-semibold mb-1">Your Messages</h3>
+              <h3 className="font-semibold mb-1">{t("Your Messages")}</h3>
               <p className="text-sm text-muted-foreground">
-                Select a conversation to start messaging
+                {t("Select a conversation to start messaging")}
               </p>
             </div>
           </div>

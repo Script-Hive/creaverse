@@ -7,7 +7,6 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Separator } from "@/components/ui/separator";
 import { motion, AnimatePresence } from "framer-motion";
 import { formatDistanceToNow } from "date-fns";
 import {
@@ -24,6 +23,8 @@ import {
   Filter,
   Trash2
 } from "lucide-react";
+import { useAutoTranslate } from "@/hooks/useTranslation";
+import { TranslatableText } from "@/components/ui/translatable-text";
 
 // Mock notification data
 const mockNotifications = [
@@ -123,6 +124,30 @@ export default function Notifications() {
     setNotifications(prev => prev.filter(n => n.id !== id));
   };
 
+  const { t } = useAutoTranslate([
+    "Notifications",
+    "Stay updated with your activity",
+    "Mark all read",
+    "All",
+    "Unread",
+    "Likes",
+    "Comments",
+    "Follows",
+    "Tokens",
+    "No notifications",
+    "You're all caught up!",
+    "You'll see notifications here when there's activity",
+    "Load More Notifications",
+    "new",
+    "liked your post",
+    "commented on your post",
+    "started following you",
+    "You earned 50 CDT tokens",
+    "left a review on your post",
+    "You completed a challenge and earned 100 CDT!",
+    "mentioned you in a comment"
+  ]);
+
   return (
     <AppLayout>
       <div className="max-w-2xl mx-auto py-6 px-4">
@@ -131,20 +156,20 @@ export default function Notifications() {
           <div>
             <h1 className="text-2xl font-bold flex items-center gap-2">
               <Bell className="w-6 h-6 text-primary" />
-              Notifications
+              {t("Notifications")}
               {unreadCount > 0 && (
                 <Badge variant="destructive" className="ml-2">
-                  {unreadCount} new
+                  {unreadCount} {t("new")}
                 </Badge>
               )}
             </h1>
-            <p className="text-muted-foreground">Stay updated with your activity</p>
+            <p className="text-muted-foreground">{t("Stay updated with your activity")}</p>
           </div>
           <div className="flex items-center gap-2">
             {unreadCount > 0 && (
               <Button variant="outline" size="sm" onClick={markAllAsRead}>
                 <CheckCheck className="w-4 h-4 mr-2" />
-                Mark all read
+                {t("Mark all read")}
               </Button>
             )}
             <Link to="/settings">
@@ -158,19 +183,19 @@ export default function Notifications() {
         {/* Filter Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-6">
           <TabsList className="w-full overflow-x-auto justify-start">
-            <TabsTrigger value="all">All</TabsTrigger>
+            <TabsTrigger value="all">{t("All")}</TabsTrigger>
             <TabsTrigger value="unread">
-              Unread
+              {t("Unread")}
               {unreadCount > 0 && (
                 <Badge variant="secondary" className="ml-1 text-xs">
                   {unreadCount}
                 </Badge>
               )}
             </TabsTrigger>
-            <TabsTrigger value="like">Likes</TabsTrigger>
-            <TabsTrigger value="comment">Comments</TabsTrigger>
-            <TabsTrigger value="follow">Follows</TabsTrigger>
-            <TabsTrigger value="token">Tokens</TabsTrigger>
+            <TabsTrigger value="like">{t("Likes")}</TabsTrigger>
+            <TabsTrigger value="comment">{t("Comments")}</TabsTrigger>
+            <TabsTrigger value="follow">{t("Follows")}</TabsTrigger>
+            <TabsTrigger value="token">{t("Tokens")}</TabsTrigger>
           </TabsList>
         </Tabs>
 
@@ -184,11 +209,11 @@ export default function Notifications() {
                 className="text-center py-12"
               >
                 <Bell className="w-16 h-16 mx-auto text-muted-foreground mb-4" />
-                <h3 className="text-lg font-medium mb-2">No notifications</h3>
+                <h3 className="text-lg font-medium mb-2">{t("No notifications")}</h3>
                 <p className="text-muted-foreground">
                   {activeTab === "unread" 
-                    ? "You're all caught up!" 
-                    : "You'll see notifications here when there's activity"
+                    ? t("You're all caught up!") 
+                    : t("You'll see notifications here when there's activity")
                   }
                 </p>
               </motion.div>
@@ -245,7 +270,7 @@ export default function Notifications() {
                                     {notification.fromUser.name}
                                   </Link>
                                 )}{" "}
-                                <span className="text-muted-foreground">{notification.message}</span>
+                                <span className="text-muted-foreground">{t(notification.message)}</span>
                                 {notification.postTitle && (
                                   <>
                                     {" "}
@@ -290,7 +315,7 @@ export default function Notifications() {
         {filteredNotifications.length > 0 && (
           <div className="text-center mt-6">
             <Button variant="outline" className="w-full">
-              Load More Notifications
+              {t("Load More Notifications")}
             </Button>
           </div>
         )}
