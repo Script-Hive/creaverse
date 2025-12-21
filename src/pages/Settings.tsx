@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
 import { currentUser } from "@/data/mockData";
-import { useSettings } from "@/contexts/SettingsContext";
+import { useSettings, languageOptions } from "@/contexts/SettingsContext";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { 
@@ -151,29 +151,22 @@ export default function Settings() {
                   <p className="text-xs text-muted-foreground">{t('languageDescription')}</p>
                 </div>
               </div>
-              <div className="grid grid-cols-2 gap-3">
-                <Button
-                  variant={language === 'en' ? 'default' : 'outline'}
-                  className={cn(
-                    "justify-start gap-2",
-                    language === 'en' && "bg-gradient-primary glow-primary"
-                  )}
-                  onClick={() => setLanguage('en')}
-                >
-                  <span className="text-lg">🇬🇧</span>
-                  {t('english')}
-                </Button>
-                <Button
-                  variant={language === 'mr' ? 'default' : 'outline'}
-                  className={cn(
-                    "justify-start gap-2",
-                    language === 'mr' && "bg-gradient-primary glow-primary"
-                  )}
-                  onClick={() => setLanguage('mr')}
-                >
-                  <span className="text-lg">🇮🇳</span>
-                  {t('marathi')}
-                </Button>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                {languageOptions.map((lang) => (
+                  <Button
+                    key={lang.code}
+                    variant={language === lang.code ? 'default' : 'outline'}
+                    size="sm"
+                    className={cn(
+                      "justify-start gap-2 h-auto py-2 px-3",
+                      language === lang.code && "bg-gradient-primary glow-primary"
+                    )}
+                    onClick={() => setLanguage(lang.code)}
+                  >
+                    <span className="text-base">{lang.flag}</span>
+                    <span className="text-xs truncate">{lang.name}</span>
+                  </Button>
+                ))}
               </div>
             </div>
           </div>
