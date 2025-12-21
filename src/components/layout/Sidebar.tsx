@@ -17,6 +17,7 @@ import {
   X,
   Sparkles,
   Bell,
+  Settings,
   LucideIcon
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
@@ -36,6 +37,7 @@ const mainNavItems: NavItem[] = [
   { label: "Create", href: "/create", icon: PlusSquare },
   { label: "Activity", href: "/activity", icon: Heart },
   { label: "Profile", href: "/profile", icon: User },
+  { label: "Settings", href: "/settings", icon: Settings },
 ];
 
 const categoryNavItems: NavItem[] = [
