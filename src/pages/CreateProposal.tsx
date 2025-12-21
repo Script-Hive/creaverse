@@ -54,6 +54,8 @@ export default function CreateProposal() {
       await createProposal.mutateAsync({
         title: title.trim(),
         description: description.trim(),
+        creator_id: "temp-user-id", // TODO: Replace with actual authenticated user ID
+        voting_start_date: new Date().toISOString(),
         voting_end_date: votingEndDate.toISOString(),
       });
 

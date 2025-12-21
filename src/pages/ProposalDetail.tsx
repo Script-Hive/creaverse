@@ -46,6 +46,7 @@ export default function ProposalDetail() {
     try {
       await castVote.mutateAsync({
         proposal_id: id,
+        user_id: "temp-user-id", // TODO: Replace with actual authenticated user ID
         vote_type: voteType,
         reason: voteReason.trim() || undefined,
         voting_power: 100, // Mock voting power
