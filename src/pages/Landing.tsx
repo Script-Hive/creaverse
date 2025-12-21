@@ -184,7 +184,7 @@ export default function Landing() {
           <div className="text-center mb-16">
             <Badge variant="outline" className="mb-4">{t("Features")}</Badge>
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              {t("Everything You Need to")} <span className="text-gradient-primary">{t("Create & Govern")}</span>
+              {t("Everything You Need to")} <span className="bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-500 bg-clip-text text-transparent">{t("Create & Govern")}</span>
             </h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
               {t("A complete ecosystem for creators, innovators, and community builders.")}
