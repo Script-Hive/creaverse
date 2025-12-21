@@ -283,6 +283,34 @@
     }
   }
 
+  /* Animate Float - for logo */
+  .animate-float {
+    animation: float-gentle 4s ease-in-out infinite;
+  }
+
+  @keyframes float-gentle {
+    0%, 100% {
+      transform: translateY(0) scale(1);
+    }
+    50% {
+      transform: translateY(-8px) scale(1.02);
+    }
+  }
+
+  /* Logo Glow Pulse */
+  .logo-glow {
+    animation: logo-glow 3s ease-in-out infinite;
+  }
+
+  @keyframes logo-glow {
+    0%, 100% {
+      filter: drop-shadow(0 0 20px rgba(34, 211, 238, 0.4));
+    }
+    50% {
+      filter: drop-shadow(0 0 35px rgba(34, 211, 238, 0.7)) drop-shadow(0 0 50px rgba(168, 85, 247, 0.4));
+    }
+  }
+
   /* Fade In Up */
   .fade-in-up {
     animation: fade-in-up 0.6s ease-out forwards;

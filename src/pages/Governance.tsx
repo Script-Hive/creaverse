@@ -43,6 +43,7 @@ import {
 } from "@/hooks/useGovernance";
 import { useSecureCastVote } from "@/hooks/useSecureVote";
 import { supabase } from "@/integrations/supabase/client";
+import creaverseLogo from "@/assets/creaverse-logo.png";
 import { useWeb3 } from "@/contexts/Web3Context";
 import { WalletConnectButton } from "@/components/web3/WalletConnectButton";
 import { toast } from "sonner";
@@ -179,14 +180,22 @@ export default function Governance() {
       <div className="p-4 lg:p-6 space-y-6">
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div>
-            <h1 className="text-2xl font-bold flex items-center gap-2">
-              <Shield className="w-6 h-6 text-primary" />
-              DAO Governance
-            </h1>
-            <p className="text-muted-foreground">
-              Participate in Creovate DAO decisions with your CDT tokens
-            </p>
+          <div className="flex items-center gap-4">
+            <div className="relative">
+              <img 
+                src={creaverseLogo} 
+                alt="CreaverseDAO" 
+                className="w-12 h-12 object-contain drop-shadow-[0_0_15px_rgba(34,211,238,0.5)]"
+              />
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold flex items-center gap-2 bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-500 bg-clip-text text-transparent">
+                DAO Governance
+              </h1>
+              <p className="text-muted-foreground">
+                Participate in CreaverseDAO decisions with your CDT tokens
+              </p>
+            </div>
           </div>
           <div className="flex items-center gap-3">
             <WalletConnectButton />

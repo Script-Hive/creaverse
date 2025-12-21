@@ -27,6 +27,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useMemo } from "react";
 import { useAutoTranslate } from "@/hooks/useTranslation";
+import creaverseLogo from "@/assets/creaverse-logo.png";
 
 interface NavItem {
   label: string;
@@ -99,12 +100,19 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
       >
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-sidebar-border">
-          <Link to="/" className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-primary flex items-center justify-center glow-primary">
-              <Sparkles className="w-5 h-5 text-primary-foreground" />
+          <Link to="/" className="flex items-center gap-3 group">
+            <div className="relative">
+              <img 
+                src={creaverseLogo} 
+                alt="CreaverseDAO" 
+                className="w-10 h-10 object-contain transition-transform duration-300 group-hover:scale-110"
+              />
+              <div className="absolute inset-0 bg-primary/20 rounded-xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             </div>
             <div>
-              <h1 className="font-bold text-lg text-sidebar-foreground">Creaverse</h1>
+              <h1 className="font-bold text-lg text-sidebar-foreground bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-500 bg-clip-text text-transparent">
+                CreaverseDAO
+              </h1>
               <p className="text-xs text-muted-foreground">{t("Create & Earn")}</p>
             </div>
           </Link>
@@ -217,11 +225,18 @@ export function MobileNav({ onMenuClick }: { onMenuClick: () => void }) {
             <Menu className="w-5 h-5" />
           </Button>
           
-          <Link to="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-gradient-primary flex items-center justify-center">
-              <Sparkles className="w-4 h-4 text-primary-foreground" />
+          <Link to="/" className="flex items-center gap-2 group">
+            <div className="relative">
+              <img 
+                src={creaverseLogo} 
+                alt="CreaverseDAO" 
+                className="w-8 h-8 object-contain transition-transform duration-300 group-hover:scale-110"
+              />
+              <div className="absolute inset-0 bg-primary/30 rounded-lg blur-lg opacity-0 group-hover:opacity-100 transition-opacity" />
             </div>
-            <span className="font-bold">Creaverse</span>
+            <span className="font-bold bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent">
+              CreaverseDAO
+            </span>
           </Link>
 
           <Link to="/notifications">

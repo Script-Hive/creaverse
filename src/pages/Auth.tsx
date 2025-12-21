@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAutoTranslate } from "@/hooks/useTranslation";
+import creaverseLogo from "@/assets/creaverse-logo.png";
 
 export default function Auth() {
   const navigate = useNavigate();
@@ -182,13 +183,20 @@ export default function Auth() {
         className="w-full max-w-md relative z-10"
       >
         {/* Logo */}
-        <Link to="/" className="flex items-center justify-center gap-3 mb-8">
-          <div className="w-12 h-12 rounded-xl bg-gradient-primary flex items-center justify-center glow-primary">
-            <Sparkles className="w-6 h-6 text-primary-foreground" />
+        <Link to="/" className="flex flex-col items-center justify-center gap-4 mb-8 group">
+          <div className="relative">
+            <img 
+              src={creaverseLogo} 
+              alt="CreaverseDAO" 
+              className="w-24 h-24 object-contain transition-transform duration-500 group-hover:scale-110 drop-shadow-[0_0_25px_rgba(34,211,238,0.5)]"
+            />
+            <div className="absolute inset-0 bg-gradient-to-r from-cyan-400/30 to-purple-500/30 rounded-full blur-2xl opacity-60 group-hover:opacity-100 transition-opacity duration-500 animate-pulse" />
           </div>
           <div className="text-center">
-            <h1 className="text-2xl font-bold">Creaverse DAO</h1>
-            <p className="text-xs text-muted-foreground">{t("Create & Earn")}</p>
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-500 bg-clip-text text-transparent">
+              CreaverseDAO
+            </h1>
+            <p className="text-sm text-muted-foreground mt-1">{t("Create & Earn")}</p>
           </div>
         </Link>
 

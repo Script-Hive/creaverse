@@ -16,6 +16,7 @@ import {
   Star
 } from "lucide-react";
 import { useTranslateTexts } from "@/components/ui/translatable-text";
+import creaverseLogo from "@/assets/creaverse-logo.png";
 
 const features = [
   {
@@ -89,11 +90,18 @@ export default function Landing() {
       {/* Navigation */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border/50">
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-primary flex items-center justify-center glow-primary">
-              <Sparkles className="w-5 h-5 text-primary-foreground" />
+          <Link to="/" className="flex items-center gap-3 group">
+            <div className="relative">
+              <img 
+                src={creaverseLogo} 
+                alt="CreaverseDAO" 
+                className="w-12 h-12 object-contain transition-transform duration-300 group-hover:scale-110 drop-shadow-[0_0_15px_rgba(34,211,238,0.4)]"
+              />
+              <div className="absolute inset-0 bg-gradient-to-r from-cyan-400/30 to-purple-500/30 rounded-xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
             </div>
-            <span className="font-bold text-xl">Creaverse DAO</span>
+            <span className="font-bold text-xl bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-500 bg-clip-text text-transparent">
+              CreaverseDAO
+            </span>
           </Link>
 
           <div className="hidden md:flex items-center gap-8">
@@ -127,43 +135,55 @@ export default function Landing() {
 
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-4xl mx-auto text-center">
+            {/* Hero Logo */}
+            <div className="mb-8 fade-in-up">
+              <div className="relative inline-block">
+                <img 
+                  src={creaverseLogo} 
+                  alt="CreaverseDAO" 
+                  className="w-32 h-32 md:w-40 md:h-40 object-contain mx-auto drop-shadow-[0_0_30px_rgba(34,211,238,0.5)] animate-float"
+                />
+                <div className="absolute inset-0 bg-gradient-to-r from-cyan-400/20 via-blue-500/20 to-purple-500/20 rounded-full blur-3xl animate-pulse" />
+              </div>
+            </div>
+
             {/* Badge */}
-            <Badge variant="glow" className="mb-6 fade-in-up">
+            <Badge variant="glow" className="mb-6 fade-in-up stagger-1">
               <Zap className="w-3 h-3 mr-1" />
               {t("AI + DAO + Creative Community")}
             </Badge>
 
             {/* Headline */}
-            <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 fade-in-up stagger-1">
+            <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 fade-in-up stagger-2">
               {t("Create. Govern.")}
-              <span className="block text-gradient-primary">{t("Build the Future.")}</span>
+              <span className="block bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-500 bg-clip-text text-transparent">{t("Build the Future.")}</span>
             </h1>
 
             {/* Subheadline */}
-            <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-8 fade-in-up stagger-2">
+            <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-8 fade-in-up stagger-3">
               {t("Join the decentralized creative ecosystem where AI accelerates your ideas, community shapes decisions, and contributions are rewarded.")}
             </p>
 
             {/* CTAs */}
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 fade-in-up stagger-3">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 fade-in-up stagger-4">
               <Link to="/feed">
-                <Button variant="hero" size="xl">
+                <Button variant="hero" size="xl" className="bg-gradient-to-r from-cyan-500 to-purple-600 hover:from-cyan-400 hover:to-purple-500 shadow-lg shadow-cyan-500/25">
                   {t("Enter Creaverse")}
                   <ArrowRight className="w-5 h-5" />
                 </Button>
               </Link>
               <Link to="/governance">
-                <Button variant="hero-outline" size="xl">
+                <Button variant="hero-outline" size="xl" className="border-cyan-500/50 hover:border-cyan-400">
                   {t("Explore Governance")}
                 </Button>
               </Link>
             </div>
 
             {/* Stats */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-16 fade-in-up stagger-4">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-16 fade-in-up stagger-5">
               {stats.map((stat, index) => (
-                <div key={index} className="text-center p-4">
-                  <p className="text-3xl md:text-4xl font-bold text-gradient-primary">{stat.value}</p>
+                <div key={index} className="text-center p-4 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 hover:border-cyan-500/30 transition-colors">
+                  <p className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent">{stat.value}</p>
                   <p className="text-sm text-muted-foreground mt-1">{t(stat.label)}</p>
                 </div>
               ))}
@@ -320,11 +340,15 @@ export default function Landing() {
       <footer className="py-12 border-t border-border">
         <div className="container mx-auto px-4">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-lg bg-gradient-primary flex items-center justify-center">
-                <Sparkles className="w-4 h-4 text-primary-foreground" />
-              </div>
-              <span className="font-semibold">Creaverse DAO</span>
+            <div className="flex items-center gap-3 group">
+              <img 
+                src={creaverseLogo} 
+                alt="CreaverseDAO" 
+                className="w-10 h-10 object-contain transition-transform duration-300 group-hover:scale-110"
+              />
+              <span className="font-semibold bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent">
+                CreaverseDAO
+              </span>
             </div>
             
             <p className="text-sm text-muted-foreground">
