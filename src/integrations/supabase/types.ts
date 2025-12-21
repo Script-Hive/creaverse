@@ -14,6 +14,48 @@ export type Database = {
   }
   public: {
     Tables: {
+      categories: {
+        Row: {
+          color: string | null
+          cover_image_url: string | null
+          created_at: string | null
+          description: string | null
+          display_order: number | null
+          gradient: string | null
+          icon: string | null
+          id: string
+          is_active: boolean | null
+          name: string
+          updated_at: string | null
+        }
+        Insert: {
+          color?: string | null
+          cover_image_url?: string | null
+          created_at?: string | null
+          description?: string | null
+          display_order?: number | null
+          gradient?: string | null
+          icon?: string | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          updated_at?: string | null
+        }
+        Update: {
+          color?: string | null
+          cover_image_url?: string | null
+          created_at?: string | null
+          description?: string | null
+          display_order?: number | null
+          gradient?: string | null
+          icon?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       challenges: {
         Row: {
           challenge_type: string
@@ -429,6 +471,53 @@ export type Database = {
           },
         ]
       }
+      subcategories: {
+        Row: {
+          category_id: string
+          created_at: string | null
+          creator_type_display: string
+          description: string | null
+          display_order: number | null
+          icon: string | null
+          id: string
+          is_active: boolean | null
+          name: string
+          updated_at: string | null
+        }
+        Insert: {
+          category_id: string
+          created_at?: string | null
+          creator_type_display: string
+          description?: string | null
+          display_order?: number | null
+          icon?: string | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          updated_at?: string | null
+        }
+        Update: {
+          category_id?: string
+          created_at?: string | null
+          creator_type_display?: string
+          description?: string | null
+          display_order?: number | null
+          icon?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "subcategories_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       token_transactions: {
         Row: {
           amount: number
@@ -547,6 +636,38 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      user_subcategories: {
+        Row: {
+          created_at: string | null
+          id: string
+          is_primary: boolean | null
+          subcategory_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          is_primary?: boolean | null
+          subcategory_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          is_primary?: boolean | null
+          subcategory_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_subcategories_subcategory_id_fkey"
+            columns: ["subcategory_id"]
+            isOneToOne: false
+            referencedRelation: "subcategories"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
