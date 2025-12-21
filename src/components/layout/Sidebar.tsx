@@ -34,6 +34,7 @@ interface NavItem {
 
 const mainNavItems: NavItem[] = [
   { label: "Home", href: "/feed", icon: Home },
+  { label: "Search", href: "/search", icon: Search },
   { label: "Explore", href: "/explore", icon: Compass },
   { label: "Create", href: "/create", icon: PlusSquare },
   { label: "Activity", href: "/activity", icon: Heart },
@@ -200,9 +201,11 @@ export function MobileNav({ onMenuClick }: { onMenuClick: () => void }) {
             <span className="font-bold">Creaverse</span>
           </Link>
 
-          <Button variant="ghost" size="icon-sm">
-            <Bell className="w-5 h-5" />
-          </Button>
+          <Link to="/notifications">
+            <Button variant="ghost" size="icon-sm">
+              <Bell className="w-5 h-5" />
+            </Button>
+          </Link>
         </div>
       </header>
 
