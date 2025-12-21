@@ -79,7 +79,10 @@ export default function Profile() {
       } : currentUser;
   
   const userPosts = mockPosts.filter(p => p.author.id === user.id);
-  const isOwnProfile = authUserId ? user.id === authUserId : (!username || username === currentUser.username);
+  
+  // Only treat as own profile if we have both an authenticated user AND a matching database profile
+  const hasValidDatabaseProfile = authUserId && (currentDbProfile?.id === authUserId || dbProfile?.id === authUserId);
+  const isOwnProfile = hasValidDatabaseProfile && user.id === authUserId;
 
   // Fetch user's creator type from database
   const { creatorTypeDisplay, subcategories, isLoading: creatorTypeLoading } = useUserCreatorType(user.id);
