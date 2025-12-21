@@ -14,16 +14,572 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      challenges: {
+        Row: {
+          challenge_type: string
+          color: string | null
+          created_at: string | null
+          description: string
+          icon: string | null
+          id: string
+          is_active: boolean | null
+          reward: number
+          target_count: number
+          title: string
+        }
+        Insert: {
+          challenge_type: string
+          color?: string | null
+          created_at?: string | null
+          description: string
+          icon?: string | null
+          id?: string
+          is_active?: boolean | null
+          reward: number
+          target_count: number
+          title: string
+        }
+        Update: {
+          challenge_type?: string
+          color?: string | null
+          created_at?: string | null
+          description?: string
+          icon?: string | null
+          id?: string
+          is_active?: boolean | null
+          reward?: number
+          target_count?: number
+          title?: string
+        }
+        Relationships: []
+      }
+      comments: {
+        Row: {
+          author_id: string
+          content: string
+          created_at: string | null
+          id: string
+          likes_count: number | null
+          parent_id: string | null
+          post_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          author_id: string
+          content: string
+          created_at?: string | null
+          id?: string
+          likes_count?: number | null
+          parent_id?: string | null
+          post_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          author_id?: string
+          content?: string
+          created_at?: string | null
+          id?: string
+          likes_count?: number | null
+          parent_id?: string | null
+          post_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "comments_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "comments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "comments_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      follows: {
+        Row: {
+          created_at: string | null
+          follower_id: string
+          following_id: string
+          id: string
+        }
+        Insert: {
+          created_at?: string | null
+          follower_id: string
+          following_id: string
+          id?: string
+        }
+        Update: {
+          created_at?: string | null
+          follower_id?: string
+          following_id?: string
+          id?: string
+        }
+        Relationships: []
+      }
+      likes: {
+        Row: {
+          comment_id: string | null
+          created_at: string | null
+          id: string
+          post_id: string | null
+          review_id: string | null
+          user_id: string
+        }
+        Insert: {
+          comment_id?: string | null
+          created_at?: string | null
+          id?: string
+          post_id?: string | null
+          review_id?: string | null
+          user_id: string
+        }
+        Update: {
+          comment_id?: string | null
+          created_at?: string | null
+          id?: string
+          post_id?: string | null
+          review_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "likes_comment_id_fkey"
+            columns: ["comment_id"]
+            isOneToOne: false
+            referencedRelation: "comments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "likes_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "likes_review_id_fkey"
+            columns: ["review_id"]
+            isOneToOne: false
+            referencedRelation: "reviews"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      notifications: {
+        Row: {
+          created_at: string | null
+          from_user_id: string | null
+          id: string
+          is_read: boolean | null
+          message: string
+          post_id: string | null
+          type: Database["public"]["Enums"]["notification_type"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          from_user_id?: string | null
+          id?: string
+          is_read?: boolean | null
+          message: string
+          post_id?: string | null
+          type: Database["public"]["Enums"]["notification_type"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          from_user_id?: string | null
+          id?: string
+          is_read?: boolean | null
+          message?: string
+          post_id?: string | null
+          type?: Database["public"]["Enums"]["notification_type"]
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notifications_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      posts: {
+        Row: {
+          author_id: string
+          category: Database["public"]["Enums"]["creator_type"]
+          comments_count: number | null
+          content: string
+          created_at: string | null
+          id: string
+          is_nft: boolean | null
+          is_published: boolean | null
+          is_tokenized: boolean | null
+          likes_count: number | null
+          media_type: Database["public"]["Enums"]["media_type"]
+          media_url: string | null
+          nft_contract_address: string | null
+          nft_token_id: string | null
+          reviews_count: number | null
+          saves_count: number | null
+          shares_count: number | null
+          tags: string[] | null
+          thumbnail_url: string | null
+          token_reward: number | null
+          updated_at: string | null
+          views_count: number | null
+        }
+        Insert: {
+          author_id: string
+          category: Database["public"]["Enums"]["creator_type"]
+          comments_count?: number | null
+          content: string
+          created_at?: string | null
+          id?: string
+          is_nft?: boolean | null
+          is_published?: boolean | null
+          is_tokenized?: boolean | null
+          likes_count?: number | null
+          media_type?: Database["public"]["Enums"]["media_type"]
+          media_url?: string | null
+          nft_contract_address?: string | null
+          nft_token_id?: string | null
+          reviews_count?: number | null
+          saves_count?: number | null
+          shares_count?: number | null
+          tags?: string[] | null
+          thumbnail_url?: string | null
+          token_reward?: number | null
+          updated_at?: string | null
+          views_count?: number | null
+        }
+        Update: {
+          author_id?: string
+          category?: Database["public"]["Enums"]["creator_type"]
+          comments_count?: number | null
+          content?: string
+          created_at?: string | null
+          id?: string
+          is_nft?: boolean | null
+          is_published?: boolean | null
+          is_tokenized?: boolean | null
+          likes_count?: number | null
+          media_type?: Database["public"]["Enums"]["media_type"]
+          media_url?: string | null
+          nft_contract_address?: string | null
+          nft_token_id?: string | null
+          reviews_count?: number | null
+          saves_count?: number | null
+          shares_count?: number | null
+          tags?: string[] | null
+          thumbnail_url?: string | null
+          token_reward?: number | null
+          updated_at?: string | null
+          views_count?: number | null
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          bio: string | null
+          created_at: string | null
+          creator_types: Database["public"]["Enums"]["creator_type"][] | null
+          display_name: string
+          email: string | null
+          followers_count: number | null
+          following_count: number | null
+          id: string
+          is_verified: boolean | null
+          reputation: number | null
+          tokens_balance: number | null
+          tokens_earned: number | null
+          updated_at: string | null
+          username: string
+          wallet_address: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string | null
+          creator_types?: Database["public"]["Enums"]["creator_type"][] | null
+          display_name: string
+          email?: string | null
+          followers_count?: number | null
+          following_count?: number | null
+          id: string
+          is_verified?: boolean | null
+          reputation?: number | null
+          tokens_balance?: number | null
+          tokens_earned?: number | null
+          updated_at?: string | null
+          username: string
+          wallet_address?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string | null
+          creator_types?: Database["public"]["Enums"]["creator_type"][] | null
+          display_name?: string
+          email?: string | null
+          followers_count?: number | null
+          following_count?: number | null
+          id?: string
+          is_verified?: boolean | null
+          reputation?: number | null
+          tokens_balance?: number | null
+          tokens_earned?: number | null
+          updated_at?: string | null
+          username?: string
+          wallet_address?: string | null
+        }
+        Relationships: []
+      }
+      reviews: {
+        Row: {
+          ai_analysis: Json | null
+          author_id: string
+          content: string
+          created_at: string | null
+          id: string
+          is_flagged: boolean | null
+          is_verified: boolean | null
+          likes_count: number | null
+          post_id: string
+          quality_score: number | null
+          rating: number
+          tokens_earned: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          ai_analysis?: Json | null
+          author_id: string
+          content: string
+          created_at?: string | null
+          id?: string
+          is_flagged?: boolean | null
+          is_verified?: boolean | null
+          likes_count?: number | null
+          post_id: string
+          quality_score?: number | null
+          rating: number
+          tokens_earned?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          ai_analysis?: Json | null
+          author_id?: string
+          content?: string
+          created_at?: string | null
+          id?: string
+          is_flagged?: boolean | null
+          is_verified?: boolean | null
+          likes_count?: number | null
+          post_id?: string
+          quality_score?: number | null
+          rating?: number
+          tokens_earned?: number | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reviews_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      saves: {
+        Row: {
+          created_at: string | null
+          id: string
+          post_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          post_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          post_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "saves_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      token_transactions: {
+        Row: {
+          amount: number
+          created_at: string | null
+          id: string
+          reason: string
+          related_post_id: string | null
+          related_review_id: string | null
+          tx_hash: string | null
+          type: Database["public"]["Enums"]["transaction_type"]
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string | null
+          id?: string
+          reason: string
+          related_post_id?: string | null
+          related_review_id?: string | null
+          tx_hash?: string | null
+          type: Database["public"]["Enums"]["transaction_type"]
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string | null
+          id?: string
+          reason?: string
+          related_post_id?: string | null
+          related_review_id?: string | null
+          tx_hash?: string | null
+          type?: Database["public"]["Enums"]["transaction_type"]
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "token_transactions_related_post_id_fkey"
+            columns: ["related_post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "token_transactions_related_review_id_fkey"
+            columns: ["related_review_id"]
+            isOneToOne: false
+            referencedRelation: "reviews"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_challenges: {
+        Row: {
+          challenge_id: string
+          claimed_at: string | null
+          completed_at: string | null
+          created_at: string | null
+          id: string
+          is_claimed: boolean | null
+          is_completed: boolean | null
+          progress: number | null
+          user_id: string
+        }
+        Insert: {
+          challenge_id: string
+          claimed_at?: string | null
+          completed_at?: string | null
+          created_at?: string | null
+          id?: string
+          is_claimed?: boolean | null
+          is_completed?: boolean | null
+          progress?: number | null
+          user_id: string
+        }
+        Update: {
+          challenge_id?: string
+          claimed_at?: string | null
+          completed_at?: string | null
+          created_at?: string | null
+          id?: string
+          is_claimed?: boolean | null
+          is_completed?: boolean | null
+          progress?: number | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_challenges_challenge_id_fkey"
+            columns: ["challenge_id"]
+            isOneToOne: false
+            referencedRelation: "challenges"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_roles: {
+        Row: {
+          granted_at: string | null
+          granted_by: string | null
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          granted_at?: string | null
+          granted_by?: string | null
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          granted_at?: string | null
+          granted_by?: string | null
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "user" | "creator" | "moderator" | "admin"
+      creator_type: "cinema" | "art" | "tech" | "books" | "nature" | "music"
+      media_type: "image" | "video" | "audio" | "document"
+      notification_type:
+        | "like"
+        | "comment"
+        | "review"
+        | "follow"
+        | "token"
+        | "mention"
+        | "reward"
+      transaction_type:
+        | "earned"
+        | "spent"
+        | "received"
+        | "sent"
+        | "staked"
+        | "unstaked"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +706,27 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["user", "creator", "moderator", "admin"],
+      creator_type: ["cinema", "art", "tech", "books", "nature", "music"],
+      media_type: ["image", "video", "audio", "document"],
+      notification_type: [
+        "like",
+        "comment",
+        "review",
+        "follow",
+        "token",
+        "mention",
+        "reward",
+      ],
+      transaction_type: [
+        "earned",
+        "spent",
+        "received",
+        "sent",
+        "staked",
+        "unstaked",
+      ],
+    },
   },
 } as const
