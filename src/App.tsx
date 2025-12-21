@@ -25,6 +25,9 @@ import ProposalDetail from "./pages/ProposalDetail";
 import AITools from "./pages/AITools";
 import Projects from "./pages/Projects";
 import Messages from "./pages/Messages";
+import Auth from "./pages/Auth";
+import Search from "./pages/Search";
+import Notifications from "./pages/Notifications";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -39,8 +42,11 @@ const App = () => (
           <BrowserRouter>
             <Routes>
               <Route path="/" element={<Landing />} />
+              <Route path="/auth" element={<Auth />} />
               <Route path="/feed" element={<Feed />} />
               <Route path="/explore" element={<Explore />} />
+              <Route path="/search" element={<Search />} />
+              <Route path="/notifications" element={<Notifications />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/profile/:username" element={<Profile />} />
               <Route path="/category/:id" element={<Category />} />

@@ -69,7 +69,7 @@ export default function Landing() {
           </div>
 
           <div className="flex items-center gap-3">
-            <Link to="/feed">
+            <Link to="/auth">
               <Button variant="ghost" size="sm">Sign In</Button>
             </Link>
             <Link to="/feed">
@@ -119,7 +119,7 @@ export default function Landing() {
                   <ArrowRight className="w-5 h-5" />
                 </Button>
               </Link>
-              <Link to="/explore">
+              <Link to="/governance">
                 <Button variant="hero-outline" size="xl">
                   Explore Governance
                 </Button>
@@ -207,7 +207,7 @@ export default function Landing() {
                 ))}
               </div>
 
-              <Link to="/explore" className="inline-block mt-8">
+              <Link to="/ai-tools" className="inline-block mt-8">
                 <Button variant="gradient">
                   Try AI Tools
                   <ArrowRight className="w-4 h-4" />
