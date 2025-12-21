@@ -46,8 +46,11 @@ export function ProfileHeader({
 }: ProfileHeaderProps) {
   const [showFullBio, setShowFullBio] = useState(false);
   
-  // Real follow functionality from database
-  const { data: isFollowing, isLoading: isFollowingLoading } = useIsFollowing(user.id);
+  // Check if user.id is a valid UUID (real database user)
+  const isValidUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(user.id);
+  
+  // Real follow functionality from database (only for real users)
+  const { data: isFollowing, isLoading: isFollowingLoading } = useIsFollowing(isValidUUID ? user.id : undefined);
   const followMutation = useFollowUser();
   const unfollowMutation = useUnfollowUser();
   
@@ -60,6 +63,11 @@ export function ProfileHeader({
   };
 
   const handleFollow = async () => {
+    if (!isValidUUID) {
+      toast.error("Cannot follow demo users");
+      return;
+    }
+    
     try {
       if (isFollowing) {
         await unfollowMutation.mutateAsync(user.id);
@@ -78,7 +86,7 @@ export function ProfileHeader({
     }
   };
 
-  const creatorTypeLabel = creatorTypeDisplay || (user.categories?.[0] 
+  const creatorTypeLabel = creatorTypeDisplay || (user.categories?.[0]
     ? `${user.categories[0].charAt(0).toUpperCase() + user.categories[0].slice(1)} Creator`
     : 'Creator');
 
