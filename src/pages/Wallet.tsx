@@ -22,6 +22,7 @@ import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { currentUser } from "@/data/mockData";
 import { toast } from "sonner";
+import { useAutoTranslate } from "@/hooks/useTranslation";
 
 interface Transaction {
   id: string;
@@ -101,10 +102,37 @@ export default function Wallet() {
   const [copied, setCopied] = useState(false);
   const walletAddress = "0x1234...5678";
 
+  const { t } = useAutoTranslate([
+    "Wallet",
+    "Manage your tokens and earnings",
+    "Refresh",
+    "Total Balance",
+    "this month",
+    "Send",
+    "Receive",
+    "Wallet Address",
+    "View on Explorer",
+    "Total Earned",
+    "Total Spent",
+    "Lifetime Earned",
+    "Reputation Score",
+    "Transaction History",
+    "All",
+    "Earned",
+    "Spent",
+    "Wallet address copied!",
+    "Review reward - Film critique",
+    "Tip from @alex_filmmaker",
+    "Content milestone - 1K views",
+    "Unlocked premium chapter",
+    "Referral bonus",
+    "Tip to @neon_artist"
+  ]);
+
   const handleCopy = () => {
     navigator.clipboard.writeText("0x1234567890abcdef1234567890abcdef12345678");
     setCopied(true);
-    toast.success("Wallet address copied!");
+    toast.success(t("Wallet address copied!"));
     setTimeout(() => setCopied(false), 2000);
   };
 
@@ -122,12 +150,12 @@ export default function Wallet() {
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h1 className="text-2xl font-bold">Wallet</h1>
-            <p className="text-muted-foreground">Manage your tokens and earnings</p>
+            <h1 className="text-2xl font-bold">{t("Wallet")}</h1>
+            <p className="text-muted-foreground">{t("Manage your tokens and earnings")}</p>
           </div>
           <Button variant="outline" size="sm">
             <RefreshCcw className="w-4 h-4 mr-2" />
-            Refresh
+            {t("Refresh")}
           </Button>
         </div>
 
@@ -137,14 +165,14 @@ export default function Wallet() {
             <CardContent className="p-6">
               <div className="flex items-start justify-between">
                 <div>
-                  <p className="text-sm text-muted-foreground mb-1">Total Balance</p>
+                  <p className="text-sm text-muted-foreground mb-1">{t("Total Balance")}</p>
                   <div className="flex items-baseline gap-2">
                     <span className="text-4xl font-bold">{formatNumber(currentUser.tokensBalance)}</span>
                     <span className="text-lg text-muted-foreground">CVT</span>
                   </div>
                   <p className="text-sm text-success mt-2 flex items-center gap-1">
                     <TrendingUp className="w-4 h-4" />
-                    +{formatNumber(totalEarned)} this month
+                    +{formatNumber(totalEarned)} {t("this month")}
                   </p>
                 </div>
                 <div className="w-14 h-14 rounded-full bg-primary/20 flex items-center justify-center">
@@ -155,11 +183,11 @@ export default function Wallet() {
               <div className="flex gap-3 mt-6">
                 <Button variant="glow" className="flex-1">
                   <ArrowUpRight className="w-4 h-4 mr-2" />
-                  Send
+                  {t("Send")}
                 </Button>
                 <Button variant="outline" className="flex-1">
                   <ArrowDownLeft className="w-4 h-4 mr-2" />
-                  Receive
+                  {t("Receive")}
                 </Button>
               </div>
             </CardContent>
@@ -167,7 +195,7 @@ export default function Wallet() {
 
           <Card variant="glass">
             <CardContent className="p-6">
-              <p className="text-sm text-muted-foreground mb-2">Wallet Address</p>
+              <p className="text-sm text-muted-foreground mb-2">{t("Wallet Address")}</p>
               <div className="flex items-center gap-2 bg-muted/50 rounded-lg px-3 py-2 mb-4">
                 <WalletIcon className="w-4 h-4 text-muted-foreground" />
                 <span className="text-sm font-mono">{walletAddress}</span>
@@ -186,7 +214,7 @@ export default function Wallet() {
               </div>
               <Button variant="outline" size="sm" className="w-full">
                 <ExternalLink className="w-4 h-4 mr-2" />
-                View on Explorer
+                {t("View on Explorer")}
               </Button>
             </CardContent>
           </Card>
@@ -197,25 +225,25 @@ export default function Wallet() {
           <Card>
             <CardContent className="p-4 text-center">
               <p className="text-2xl font-bold text-success">+{formatNumber(totalEarned)}</p>
-              <p className="text-xs text-muted-foreground">Total Earned</p>
+              <p className="text-xs text-muted-foreground">{t("Total Earned")}</p>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="p-4 text-center">
               <p className="text-2xl font-bold text-destructive">-{formatNumber(totalSpent)}</p>
-              <p className="text-xs text-muted-foreground">Total Spent</p>
+              <p className="text-xs text-muted-foreground">{t("Total Spent")}</p>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="p-4 text-center">
               <p className="text-2xl font-bold">{formatNumber(currentUser.tokensEarned)}</p>
-              <p className="text-xs text-muted-foreground">Lifetime Earned</p>
+              <p className="text-xs text-muted-foreground">{t("Lifetime Earned")}</p>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="p-4 text-center">
               <p className="text-2xl font-bold">{currentUser.reputation}</p>
-              <p className="text-xs text-muted-foreground">Reputation Score</p>
+              <p className="text-xs text-muted-foreground">{t("Reputation Score")}</p>
             </CardContent>
           </Card>
         </div>
@@ -223,7 +251,7 @@ export default function Wallet() {
         {/* Transactions */}
         <Card>
           <CardHeader>
-            <CardTitle className="text-lg">Transaction History</CardTitle>
+            <CardTitle className="text-lg">{t("Transaction History")}</CardTitle>
           </CardHeader>
           <CardContent className="p-0">
             <Tabs defaultValue="all">
@@ -233,19 +261,19 @@ export default function Wallet() {
                     value="all"
                     className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent"
                   >
-                    All
+                    {t("All")}
                   </TabsTrigger>
                   <TabsTrigger 
                     value="earned"
                     className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent"
                   >
-                    Earned
+                    {t("Earned")}
                   </TabsTrigger>
                   <TabsTrigger 
                     value="spent"
                     className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent"
                   >
-                    Spent
+                    {t("Spent")}
                   </TabsTrigger>
                 </TabsList>
               </div>
@@ -253,7 +281,7 @@ export default function Wallet() {
               <TabsContent value="all" className="mt-0">
                 <div className="divide-y divide-border">
                   {mockTransactions.map((tx) => (
-                    <TransactionItem key={tx.id} transaction={tx} />
+                    <TransactionItem key={tx.id} transaction={tx} t={t} />
                   ))}
                 </div>
               </TabsContent>
@@ -261,9 +289,9 @@ export default function Wallet() {
               <TabsContent value="earned" className="mt-0">
                 <div className="divide-y divide-border">
                   {mockTransactions
-                    .filter(t => t.type === "earned" || t.type === "received")
+                    .filter(tx => tx.type === "earned" || tx.type === "received")
                     .map((tx) => (
-                      <TransactionItem key={tx.id} transaction={tx} />
+                      <TransactionItem key={tx.id} transaction={tx} t={t} />
                     ))}
                 </div>
               </TabsContent>
@@ -271,9 +299,9 @@ export default function Wallet() {
               <TabsContent value="spent" className="mt-0">
                 <div className="divide-y divide-border">
                   {mockTransactions
-                    .filter(t => t.type === "spent" || t.type === "sent")
+                    .filter(tx => tx.type === "spent" || tx.type === "sent")
                     .map((tx) => (
-                      <TransactionItem key={tx.id} transaction={tx} />
+                      <TransactionItem key={tx.id} transaction={tx} t={t} />
                     ))}
                 </div>
               </TabsContent>
@@ -285,8 +313,13 @@ export default function Wallet() {
   );
 }
 
-const TransactionItem = forwardRef<HTMLDivElement, { transaction: Transaction }>(
-  ({ transaction }, ref) => {
+interface TransactionItemProps {
+  transaction: Transaction;
+  t: (text: string) => string;
+}
+
+const TransactionItem = forwardRef<HTMLDivElement, TransactionItemProps>(
+  ({ transaction, t }, ref) => {
     const isPositive = transaction.type === "earned" || transaction.type === "received";
     const Icon = transaction.icon;
 
@@ -303,7 +336,7 @@ const TransactionItem = forwardRef<HTMLDivElement, { transaction: Transaction }>
         </div>
         
         <div className="flex-1 min-w-0">
-          <p className="font-medium text-sm truncate">{transaction.reason}</p>
+          <p className="font-medium text-sm truncate">{t(transaction.reason)}</p>
           <p className="text-xs text-muted-foreground">{timeAgo(transaction.timestamp)}</p>
         </div>
 

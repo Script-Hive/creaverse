@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { mockUsers, currentUser } from "@/data/mockData";
+import { useAutoTranslate } from "@/hooks/useTranslation";
 
 interface Challenge {
   id: string;
@@ -106,6 +107,30 @@ export default function Rewards() {
   const userRank = leaderboardUsers.findIndex(u => u.id === currentUser.id) + 1 || leaderboardUsers.length + 1;
   const completedChallenges = challenges.filter(c => c.progress >= c.total).length;
 
+  const { t } = useAutoTranslate([
+    "Rewards & Leaderboard",
+    "Earn While You Create",
+    "Complete challenges, climb the leaderboard, and earn tokens",
+    "Your Rank",
+    "Tokens Earned",
+    "Challenges",
+    "Day Streak",
+    "Leaderboard",
+    "tokens",
+    "Claim",
+    "You",
+    "First Review",
+    "Write your first content review",
+    "Content Creator",
+    "Publish 5 posts",
+    "Community Builder",
+    "Get 100 followers",
+    "Token Master",
+    "Earn 1,000 tokens",
+    "Viral Content",
+    "Get 10,000 views on a single post"
+  ]);
+
   return (
     <AppLayout>
       <div className="max-w-4xl mx-auto py-6 px-4">
@@ -113,11 +138,11 @@ export default function Rewards() {
         <div className="text-center mb-8">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-4">
             <Trophy className="w-5 h-5 text-primary" />
-            <span className="text-sm font-medium">Rewards & Leaderboard</span>
+            <span className="text-sm font-medium">{t("Rewards & Leaderboard")}</span>
           </div>
-          <h1 className="text-3xl font-bold mb-2">Earn While You Create</h1>
+          <h1 className="text-3xl font-bold mb-2">{t("Earn While You Create")}</h1>
           <p className="text-muted-foreground">
-            Complete challenges, climb the leaderboard, and earn tokens
+            {t("Complete challenges, climb the leaderboard, and earn tokens")}
           </p>
         </div>
 
@@ -129,7 +154,7 @@ export default function Rewards() {
                 <Trophy className="w-5 h-5 text-yellow-500" />
               </div>
               <p className="text-2xl font-bold">#{userRank}</p>
-              <p className="text-xs text-muted-foreground">Your Rank</p>
+              <p className="text-xs text-muted-foreground">{t("Your Rank")}</p>
             </CardContent>
           </Card>
           <Card variant="glass">
@@ -138,7 +163,7 @@ export default function Rewards() {
                 <Coins className="w-5 h-5 text-primary" />
               </div>
               <p className="text-2xl font-bold">{formatNumber(currentUser.tokensEarned)}</p>
-              <p className="text-xs text-muted-foreground">Tokens Earned</p>
+              <p className="text-xs text-muted-foreground">{t("Tokens Earned")}</p>
             </CardContent>
           </Card>
           <Card variant="glass">
@@ -147,7 +172,7 @@ export default function Rewards() {
                 <Target className="w-5 h-5 text-success" />
               </div>
               <p className="text-2xl font-bold">{completedChallenges}/{challenges.length}</p>
-              <p className="text-xs text-muted-foreground">Challenges</p>
+              <p className="text-xs text-muted-foreground">{t("Challenges")}</p>
             </CardContent>
           </Card>
           <Card variant="glass">
@@ -156,7 +181,7 @@ export default function Rewards() {
                 <Flame className="w-5 h-5 text-orange-500" />
               </div>
               <p className="text-2xl font-bold">7</p>
-              <p className="text-xs text-muted-foreground">Day Streak</p>
+              <p className="text-xs text-muted-foreground">{t("Day Streak")}</p>
             </CardContent>
           </Card>
         </div>
@@ -165,11 +190,11 @@ export default function Rewards() {
           <TabsList className="w-full mb-6">
             <TabsTrigger value="challenges" className="flex-1">
               <Target className="w-4 h-4 mr-2" />
-              Challenges
+              {t("Challenges")}
             </TabsTrigger>
             <TabsTrigger value="leaderboard" className="flex-1">
               <Trophy className="w-4 h-4 mr-2" />
-              Leaderboard
+              {t("Leaderboard")}
             </TabsTrigger>
           </TabsList>
 
@@ -198,14 +223,14 @@ export default function Rewards() {
 
                         <div className="flex-1">
                           <div className="flex items-center justify-between mb-1">
-                            <h3 className="font-semibold">{challenge.title}</h3>
+                            <h3 className="font-semibold">{t(challenge.title)}</h3>
                             <Badge variant={isCompleted ? "success" : "secondary"}>
                               <Coins className="w-3 h-3 mr-1" />
-                              {challenge.reward} tokens
+                              {challenge.reward} {t("tokens")}
                             </Badge>
                           </div>
                           <p className="text-sm text-muted-foreground mb-3">
-                            {challenge.description}
+                            {t(challenge.description)}
                           </p>
                           <div className="flex items-center gap-3">
                             <Progress value={progressPercent} className="flex-1 h-2" />
@@ -218,7 +243,7 @@ export default function Rewards() {
                         {isCompleted && (
                           <Button variant="glow" size="sm">
                             <Gift className="w-4 h-4 mr-1" />
-                            Claim
+                            {t("Claim")}
                           </Button>
                         )}
                       </div>
@@ -305,7 +330,7 @@ export default function Rewards() {
                             <BadgeCheck className="w-4 h-4 text-primary fill-primary/20" />
                           )}
                           {user.id === currentUser.id && (
-                            <Badge variant="secondary" className="text-[10px] ml-2">You</Badge>
+                            <Badge variant="secondary" className="text-[10px] ml-2">{t("You")}</Badge>
                           )}
                         </div>
                         <p className="text-xs text-muted-foreground">@{user.username}</p>
@@ -313,7 +338,7 @@ export default function Rewards() {
 
                       <div className="text-right">
                         <p className="font-bold">{formatNumber(user.tokensEarned)}</p>
-                        <p className="text-xs text-muted-foreground">tokens</p>
+                        <p className="text-xs text-muted-foreground">{t("tokens")}</p>
                       </div>
                     </div>
                   ))}

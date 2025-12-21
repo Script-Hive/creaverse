@@ -20,6 +20,7 @@ import {
   CheckCircle
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { useAutoTranslate } from "@/hooks/useTranslation";
 
 export default function Auth() {
   const navigate = useNavigate();
@@ -38,11 +39,45 @@ export default function Auth() {
   const [displayName, setDisplayName] = useState("");
   const [username, setUsername] = useState("");
 
+  const { t } = useAutoTranslate([
+    "Create & Earn",
+    "Welcome",
+    "Sign in to your account to continue",
+    "Create an account to get started",
+    "Login",
+    "Sign Up",
+    "Email",
+    "Password",
+    "Display Name",
+    "Username",
+    "Confirm Password",
+    "Signing in...",
+    "Sign In",
+    "Creating account...",
+    "Create Account",
+    "By continuing, you agree to our",
+    "Terms of Service",
+    "and",
+    "Privacy Policy",
+    "← Back to home",
+    "Please fill in all fields",
+    "Invalid email or password",
+    "Welcome back!",
+    "You have successfully logged in",
+    "An unexpected error occurred",
+    "Passwords do not match",
+    "Password must be at least 6 characters",
+    "Username must be at least 3 characters",
+    "An account with this email already exists",
+    "Account created successfully!",
+    "Please check your email to verify your account"
+  ]);
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!loginEmail || !loginPassword) {
-      toast.error("Please fill in all fields");
+      toast.error(t("Please fill in all fields"));
       return;
     }
 
@@ -55,19 +90,19 @@ export default function Auth() {
 
       if (error) {
         if (error.message.includes("Invalid login credentials")) {
-          toast.error("Invalid email or password");
+          toast.error(t("Invalid email or password"));
         } else {
           toast.error(error.message);
         }
         return;
       }
 
-      toast.success("Welcome back!", {
-        description: "You have successfully logged in"
+      toast.success(t("Welcome back!"), {
+        description: t("You have successfully logged in")
       });
       navigate("/feed");
     } catch (error: any) {
-      toast.error("An unexpected error occurred");
+      toast.error(t("An unexpected error occurred"));
     } finally {
       setIsLoading(false);
     }
@@ -77,22 +112,22 @@ export default function Auth() {
     e.preventDefault();
     
     if (!signupEmail || !signupPassword || !signupConfirmPassword || !displayName || !username) {
-      toast.error("Please fill in all fields");
+      toast.error(t("Please fill in all fields"));
       return;
     }
 
     if (signupPassword !== signupConfirmPassword) {
-      toast.error("Passwords do not match");
+      toast.error(t("Passwords do not match"));
       return;
     }
 
     if (signupPassword.length < 6) {
-      toast.error("Password must be at least 6 characters");
+      toast.error(t("Password must be at least 6 characters"));
       return;
     }
 
     if (username.length < 3) {
-      toast.error("Username must be at least 3 characters");
+      toast.error(t("Username must be at least 3 characters"));
       return;
     }
 
@@ -114,19 +149,19 @@ export default function Auth() {
 
       if (error) {
         if (error.message.includes("already registered")) {
-          toast.error("An account with this email already exists");
+          toast.error(t("An account with this email already exists"));
         } else {
           toast.error(error.message);
         }
         return;
       }
 
-      toast.success("Account created successfully!", {
-        description: "Please check your email to verify your account"
+      toast.success(t("Account created successfully!"), {
+        description: t("Please check your email to verify your account")
       });
       navigate("/feed");
     } catch (error: any) {
-      toast.error("An unexpected error occurred");
+      toast.error(t("An unexpected error occurred"));
     } finally {
       setIsLoading(false);
     }
@@ -153,31 +188,31 @@ export default function Auth() {
           </div>
           <div className="text-center">
             <h1 className="text-2xl font-bold">Creaverse DAO</h1>
-            <p className="text-xs text-muted-foreground">Create & Earn</p>
+            <p className="text-xs text-muted-foreground">{t("Create & Earn")}</p>
           </div>
         </Link>
 
         <Card className="border-border/50 bg-card/80 backdrop-blur-xl">
           <CardHeader className="text-center pb-2">
-            <CardTitle>Welcome</CardTitle>
+            <CardTitle>{t("Welcome")}</CardTitle>
             <CardDescription>
               {activeTab === "login" 
-                ? "Sign in to your account to continue" 
-                : "Create an account to get started"
+                ? t("Sign in to your account to continue") 
+                : t("Create an account to get started")
               }
             </CardDescription>
           </CardHeader>
           <CardContent>
             <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as "login" | "signup")}>
               <TabsList className="grid w-full grid-cols-2 mb-6">
-                <TabsTrigger value="login">Login</TabsTrigger>
-                <TabsTrigger value="signup">Sign Up</TabsTrigger>
+                <TabsTrigger value="login">{t("Login")}</TabsTrigger>
+                <TabsTrigger value="signup">{t("Sign Up")}</TabsTrigger>
               </TabsList>
 
               <TabsContent value="login">
                 <form onSubmit={handleLogin} className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="login-email">Email</Label>
+                    <Label htmlFor="login-email">{t("Email")}</Label>
                     <div className="relative">
                       <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                       <Input
@@ -192,7 +227,7 @@ export default function Auth() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="login-password">Password</Label>
+                    <Label htmlFor="login-password">{t("Password")}</Label>
                     <div className="relative">
                       <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                       <Input
@@ -217,11 +252,11 @@ export default function Auth() {
                     {isLoading ? (
                       <>
                         <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                        Signing in...
+                        {t("Signing in...")}
                       </>
                     ) : (
                       <>
-                        Sign In
+                        {t("Sign In")}
                         <ArrowRight className="w-4 h-4 ml-2" />
                       </>
                     )}
@@ -233,7 +268,7 @@ export default function Auth() {
                 <form onSubmit={handleSignup} className="space-y-4">
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor="display-name">Display Name</Label>
+                      <Label htmlFor="display-name">{t("Display Name")}</Label>
                       <div className="relative">
                         <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                         <Input
@@ -248,7 +283,7 @@ export default function Auth() {
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="username">Username</Label>
+                      <Label htmlFor="username">{t("Username")}</Label>
                       <div className="relative">
                         <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">@</span>
                         <Input
@@ -264,7 +299,7 @@ export default function Auth() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="signup-email">Email</Label>
+                    <Label htmlFor="signup-email">{t("Email")}</Label>
                     <div className="relative">
                       <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                       <Input
@@ -279,7 +314,7 @@ export default function Auth() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="signup-password">Password</Label>
+                    <Label htmlFor="signup-password">{t("Password")}</Label>
                     <div className="relative">
                       <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                       <Input
@@ -301,7 +336,7 @@ export default function Auth() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="confirm-password">Confirm Password</Label>
+                    <Label htmlFor="confirm-password">{t("Confirm Password")}</Label>
                     <div className="relative">
                       <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                       <Input
@@ -322,11 +357,11 @@ export default function Auth() {
                     {isLoading ? (
                       <>
                         <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                        Creating account...
+                        {t("Creating account...")}
                       </>
                     ) : (
                       <>
-                        Create Account
+                        {t("Create Account")}
                         <ArrowRight className="w-4 h-4 ml-2" />
                       </>
                     )}
@@ -338,16 +373,16 @@ export default function Auth() {
             <Separator className="my-6" />
 
             <p className="text-center text-xs text-muted-foreground">
-              By continuing, you agree to our{" "}
-              <Link to="/terms" className="text-primary hover:underline">Terms of Service</Link>
-              {" "}and{" "}
-              <Link to="/privacy" className="text-primary hover:underline">Privacy Policy</Link>
+              {t("By continuing, you agree to our")}{" "}
+              <Link to="/terms" className="text-primary hover:underline">{t("Terms of Service")}</Link>
+              {" "}{t("and")}{" "}
+              <Link to="/privacy" className="text-primary hover:underline">{t("Privacy Policy")}</Link>
             </p>
           </CardContent>
         </Card>
 
         <p className="text-center text-sm text-muted-foreground mt-6">
-          <Link to="/" className="text-primary hover:underline">← Back to home</Link>
+          <Link to="/" className="text-primary hover:underline">{t("← Back to home")}</Link>
         </p>
       </motion.div>
     </div>

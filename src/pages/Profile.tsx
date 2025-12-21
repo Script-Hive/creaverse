@@ -15,6 +15,7 @@ import { useUserCreatorType, useUpdateUserSubcategories } from "@/hooks/useCateg
 import { useProfileByUsername, useCurrentUserProfile, useProfile } from "@/hooks/useProfile";
 import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useAutoTranslate } from "@/hooks/useTranslation";
 
 export default function Profile() {
   const { username } = useParams();
@@ -22,6 +23,11 @@ export default function Profile() {
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [authUserId, setAuthUserId] = useState<string | null>(null);
   
+  const { t } = useAutoTranslate([
+    "You are now following",
+    "Add highlight feature coming soon!"
+  ]);
+
   // Check for authenticated user
   useEffect(() => {
     const getUser = async () => {
@@ -93,7 +99,7 @@ export default function Profile() {
   const categoryName = primarySubcategory?.subcategory?.category?.name;
 
   const handleFollow = () => {
-    toast.success(`You are now following ${user.displayName}`);
+    toast.success(`${t("You are now following")} ${user.displayName}`);
   };
 
   const handleMessage = () => {
@@ -101,7 +107,7 @@ export default function Profile() {
   };
 
   const handleAddHighlight = () => {
-    toast.info("Add highlight feature coming soon!");
+    toast.info(t("Add highlight feature coming soon!"));
   };
 
   const handleEditProfile = () => {
