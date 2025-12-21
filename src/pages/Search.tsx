@@ -25,6 +25,7 @@ import {
   Sparkles,
   Clock
 } from "lucide-react";
+import { useAutoTranslate } from "@/hooks/useTranslation";
 
 // Mock data for search results
 const trendingTopics = [
@@ -59,6 +60,31 @@ export default function Search() {
   const [activeTab, setActiveTab] = useState("all");
   const [recentSearchList, setRecentSearchList] = useState(recentSearches);
 
+  const { t } = useAutoTranslate([
+    "Search",
+    "Discover creators, posts, and topics",
+    "Search creators, posts, tags...",
+    "All",
+    "Creators",
+    "Posts",
+    "Tags",
+    "Recent Searches",
+    "Clear All",
+    "Trending Topics",
+    "posts",
+    "Suggested Creators",
+    "followers",
+    "Browse Categories",
+    "cinema",
+    "art",
+    "tech",
+    "books",
+    "nature",
+    "music",
+    "Searching for",
+    "Search functionality will display results from the database here."
+  ]);
+
   const clearRecentSearch = (search: string) => {
     setRecentSearchList(prev => prev.filter(s => s !== search));
   };
@@ -72,9 +98,9 @@ export default function Search() {
         <div className="mb-8">
           <h1 className="text-2xl font-bold mb-2 flex items-center gap-2">
             <SearchIcon className="w-6 h-6 text-primary" />
-            Search
+            {t("Search")}
           </h1>
-          <p className="text-muted-foreground">Discover creators, posts, and topics</p>
+          <p className="text-muted-foreground">{t("Discover creators, posts, and topics")}</p>
         </div>
 
         {/* Search Input */}
@@ -82,7 +108,7 @@ export default function Search() {
           <SearchIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
           <Input
             type="text"
-            placeholder="Search creators, posts, tags..."
+            placeholder={t("Search creators, posts, tags...")}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="pl-12 pr-12 py-6 text-lg rounded-xl border-2 focus:border-primary"
@@ -100,10 +126,10 @@ export default function Search() {
         {/* Search Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-6">
           <TabsList className="w-full justify-start">
-            <TabsTrigger value="all">All</TabsTrigger>
-            <TabsTrigger value="creators">Creators</TabsTrigger>
-            <TabsTrigger value="posts">Posts</TabsTrigger>
-            <TabsTrigger value="tags">Tags</TabsTrigger>
+            <TabsTrigger value="all">{t("All")}</TabsTrigger>
+            <TabsTrigger value="creators">{t("Creators")}</TabsTrigger>
+            <TabsTrigger value="posts">{t("Posts")}</TabsTrigger>
+            <TabsTrigger value="tags">{t("Tags")}</TabsTrigger>
           </TabsList>
         </Tabs>
 
@@ -121,7 +147,7 @@ export default function Search() {
                   <div className="flex items-center justify-between mb-4">
                     <h2 className="text-lg font-semibold flex items-center gap-2">
                       <Clock className="w-5 h-5 text-muted-foreground" />
-                      Recent Searches
+                      {t("Recent Searches")}
                     </h2>
                     <Button
                       variant="ghost"
@@ -129,7 +155,7 @@ export default function Search() {
                       onClick={() => setRecentSearchList([])}
                       className="text-muted-foreground"
                     >
-                      Clear All
+                      {t("Clear All")}
                     </Button>
                   </div>
                   <div className="flex flex-wrap gap-2">
@@ -160,7 +186,7 @@ export default function Search() {
               <div>
                 <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
                   <TrendingUp className="w-5 h-5 text-primary" />
-                  Trending Topics
+                  {t("Trending Topics")}
                 </h2>
                 <div className="grid grid-cols-2 gap-3">
                   {trendingTopics.map((topic, index) => (
@@ -182,7 +208,7 @@ export default function Search() {
                             <div>
                               <p className="font-medium">#{topic.tag}</p>
                               <p className="text-xs text-muted-foreground">
-                                {topic.posts.toLocaleString()} posts
+                                {topic.posts.toLocaleString()} {t("posts")}
                               </p>
                             </div>
                           </div>
@@ -198,7 +224,7 @@ export default function Search() {
               <div>
                 <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
                   <Users className="w-5 h-5 text-primary" />
-                  Suggested Creators
+                  {t("Suggested Creators")}
                 </h2>
                 <div className="space-y-3">
                   {suggestedCreators.map((creator, index) => {
@@ -227,7 +253,7 @@ export default function Search() {
                                     <p className="font-medium">{creator.name}</p>
                                     <Badge variant="outline" className="text-xs">
                                       <Icon className="w-3 h-3 mr-1" />
-                                      {creator.category}
+                                      {t(creator.category)}
                                     </Badge>
                                   </div>
                                   <p className="text-sm text-muted-foreground">@{creator.username}</p>
@@ -235,7 +261,7 @@ export default function Search() {
                               </div>
                               <div className="text-right">
                                 <p className="text-sm font-medium">{(creator.followers / 1000).toFixed(1)}K</p>
-                                <p className="text-xs text-muted-foreground">followers</p>
+                                <p className="text-xs text-muted-foreground">{t("followers")}</p>
                               </div>
                             </CardContent>
                           </Card>
@@ -250,7 +276,7 @@ export default function Search() {
               <div>
                 <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
                   <Sparkles className="w-5 h-5 text-primary" />
-                  Browse Categories
+                  {t("Browse Categories")}
                 </h2>
                 <div className="grid grid-cols-3 gap-3">
                   {Object.entries(categoryConfig).map(([category, config], index) => {
@@ -266,7 +292,7 @@ export default function Search() {
                           <Card className="cursor-pointer hover:scale-105 transition-transform overflow-hidden group">
                             <CardContent className={`p-4 bg-gradient-to-br ${config.gradient} text-white`}>
                               <Icon className="w-8 h-8 mb-2 group-hover:scale-110 transition-transform" />
-                              <p className="font-medium capitalize">{category}</p>
+                              <p className="font-medium capitalize">{t(category)}</p>
                             </CardContent>
                           </Card>
                         </Link>
@@ -284,9 +310,9 @@ export default function Search() {
               className="text-center py-12"
             >
               <SearchIcon className="w-16 h-16 mx-auto text-muted-foreground mb-4" />
-              <h3 className="text-lg font-medium mb-2">Searching for "{searchQuery}"</h3>
+              <h3 className="text-lg font-medium mb-2">{t("Searching for")} "{searchQuery}"</h3>
               <p className="text-muted-foreground">
-                Search functionality will display results from the database here.
+                {t("Search functionality will display results from the database here.")}
               </p>
             </motion.div>
           )}

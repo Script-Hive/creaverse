@@ -19,6 +19,8 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { mockUsers } from "@/data/mockData";
+import { useAutoTranslate } from "@/hooks/useTranslation";
+import { TranslatableText } from "@/components/ui/translatable-text";
 
 interface Activity {
   id: string;
@@ -117,8 +119,13 @@ const timeAgo = (date: Date): string => {
   return date.toLocaleDateString();
 };
 
-const ActivityItem = forwardRef<HTMLDivElement, { activity: Activity }>(
-  ({ activity }, ref) => {
+interface ActivityItemProps {
+  activity: Activity;
+  t: (text: string) => string;
+}
+
+const ActivityItem = forwardRef<HTMLDivElement, ActivityItemProps>(
+  ({ activity, t }, ref) => {
     const Icon = getActivityIcon(activity.type);
     
     return (
@@ -149,7 +156,7 @@ const ActivityItem = forwardRef<HTMLDivElement, { activity: Activity }>(
             {activity.user.isVerified && (
               <BadgeCheck className="w-3.5 h-3.5 text-primary fill-primary/20 inline ml-1" />
             )}
-            <span className="text-muted-foreground ml-1">{activity.message}</span>
+            <span className="text-muted-foreground ml-1">{t(activity.message)}</span>
           </p>
           <p className="text-xs text-muted-foreground mt-0.5">
             {timeAgo(activity.timestamp)}
@@ -166,7 +173,7 @@ const ActivityItem = forwardRef<HTMLDivElement, { activity: Activity }>(
 
         {activity.type === "follow" && (
           <Button size="sm" variant="outline">
-            Follow Back
+            {t("Follow Back")}
           </Button>
         )}
 
@@ -182,6 +189,25 @@ ActivityItem.displayName = "ActivityItem";
 
 export default function Activity() {
   const unreadCount = mockActivities.filter(a => !a.isRead).length;
+  
+  const { t } = useAutoTranslate([
+    "Activity",
+    "new",
+    "Mark all read",
+    "All",
+    "Likes",
+    "Reviews",
+    "Tokens",
+    "No Activity Yet",
+    "When people interact with your content, you'll see it here",
+    "liked your post",
+    "started following you",
+    "left a 5-star review on your film",
+    "You earned 50 tokens from reviews",
+    "commented: \"This is amazing work!\"",
+    "mentioned you in a comment",
+    "Follow Back"
+  ]);
 
   return (
     <AppLayout>
@@ -190,17 +216,17 @@ export default function Activity() {
         <div className="flex items-center justify-between p-4 border-b border-border sticky top-0 bg-background/95 backdrop-blur-sm z-10">
           <div className="flex items-center gap-3">
             <Bell className="w-6 h-6" />
-            <h1 className="text-xl font-bold">Activity</h1>
+            <h1 className="text-xl font-bold">{t("Activity")}</h1>
             {unreadCount > 0 && (
               <Badge variant="glow" className="text-xs">
-                {unreadCount} new
+                {unreadCount} {t("new")}
               </Badge>
             )}
           </div>
           <div className="flex gap-2">
             <Button variant="ghost" size="sm">
               <Check className="w-4 h-4 mr-1" />
-              Mark all read
+              {t("Mark all read")}
             </Button>
             <Button variant="ghost" size="icon-sm">
               <Settings className="w-5 h-5" />
@@ -215,35 +241,35 @@ export default function Activity() {
               value="all" 
               className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-6"
             >
-              All
+              {t("All")}
             </TabsTrigger>
             <TabsTrigger 
               value="likes" 
               className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-6"
             >
               <Heart className="w-4 h-4 mr-1" />
-              Likes
+              {t("Likes")}
             </TabsTrigger>
             <TabsTrigger 
               value="reviews" 
               className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-6"
             >
               <Star className="w-4 h-4 mr-1" />
-              Reviews
+              {t("Reviews")}
             </TabsTrigger>
             <TabsTrigger 
               value="tokens" 
               className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-6"
             >
               <Coins className="w-4 h-4 mr-1" />
-              Tokens
+              {t("Tokens")}
             </TabsTrigger>
           </TabsList>
 
           <TabsContent value="all" className="mt-0">
             <div className="divide-y divide-border">
               {mockActivities.map((activity) => (
-                <ActivityItem key={activity.id} activity={activity} />
+                <ActivityItem key={activity.id} activity={activity} t={t} />
               ))}
             </div>
           </TabsContent>
@@ -253,7 +279,7 @@ export default function Activity() {
               {mockActivities
                 .filter(a => a.type === "like")
                 .map((activity) => (
-                  <ActivityItem key={activity.id} activity={activity} />
+                  <ActivityItem key={activity.id} activity={activity} t={t} />
                 ))}
             </div>
           </TabsContent>
@@ -263,7 +289,7 @@ export default function Activity() {
               {mockActivities
                 .filter(a => a.type === "review")
                 .map((activity) => (
-                  <ActivityItem key={activity.id} activity={activity} />
+                  <ActivityItem key={activity.id} activity={activity} t={t} />
                 ))}
             </div>
           </TabsContent>
@@ -273,7 +299,7 @@ export default function Activity() {
               {mockActivities
                 .filter(a => a.type === "token")
                 .map((activity) => (
-                  <ActivityItem key={activity.id} activity={activity} />
+                  <ActivityItem key={activity.id} activity={activity} t={t} />
                 ))}
             </div>
           </TabsContent>
@@ -285,9 +311,9 @@ export default function Activity() {
             <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mb-4">
               <Bell className="w-8 h-8 text-muted-foreground" />
             </div>
-            <h3 className="text-lg font-semibold mb-1">No Activity Yet</h3>
+            <h3 className="text-lg font-semibold mb-1">{t("No Activity Yet")}</h3>
             <p className="text-muted-foreground">
-              When people interact with your content, you'll see it here
+              {t("When people interact with your content, you'll see it here")}
             </p>
           </div>
         )}
