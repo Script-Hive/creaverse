@@ -79,37 +79,37 @@ export const PostCard = forwardRef<HTMLElement, PostCardProps>(({ post }, ref) =
   return (
     <article className="bg-card border-b border-border">
       {/* Header */}
-      <div className="flex items-center justify-between p-4">
-        <Link to={`/profile/${post.author.username}`} className="flex items-center gap-3">
+      <div className="flex items-center justify-between p-3 sm:p-4">
+        <Link to={`/profile/${post.author.username}`} className="flex items-center gap-3 min-h-[44px] touch-manipulation">
           <div className={cn(
-            "w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold",
+            "w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0",
             `bg-gradient-to-br ${getCategoryGradient(post.category)}`
           )}>
             {post.author.displayName.charAt(0)}
           </div>
-          <div>
+          <div className="min-w-0">
             <div className="flex items-center gap-1.5">
-              <span className="font-semibold text-sm">{post.author.displayName}</span>
+              <span className="font-semibold text-sm truncate">{post.author.displayName}</span>
               {post.author.isVerified && (
-                <BadgeCheck className="w-4 h-4 text-primary fill-primary/20" />
+                <BadgeCheck className="w-4 h-4 text-primary fill-primary/20 flex-shrink-0" />
               )}
             </div>
             <div className="flex items-center gap-2 text-xs text-muted-foreground">
-              <span>@{post.author.username}</span>
+              <span className="truncate">@{post.author.username}</span>
               <span>·</span>
-              <span>{timeAgo(post.createdAt)}</span>
+              <span className="flex-shrink-0">{timeAgo(post.createdAt)}</span>
             </div>
           </div>
         </Link>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1 flex-shrink-0">
           {post.isTokenized && (
-            <Badge variant="glow" className="text-[10px] px-2 py-0.5">
+            <Badge variant="glow" className="text-[10px] px-2 py-0.5 hidden sm:flex">
               <Coins className="w-3 h-3 mr-1" />
               {post.tokenReward} {t("tokens")}
             </Badge>
           )}
-          <Button variant="ghost" size="icon-sm">
+          <Button variant="ghost" size="icon" className="touch-manipulation">
             <MoreHorizontal className="w-5 h-5" />
           </Button>
         </div>
@@ -157,27 +157,27 @@ export const PostCard = forwardRef<HTMLElement, PostCardProps>(({ post }, ref) =
       </Link>
 
       {/* Actions */}
-      <div className="flex items-center justify-between p-4">
-        <div className="flex items-center gap-1">
+      <div className="flex items-center justify-between px-3 sm:px-4 py-2">
+        <div className="flex items-center gap-0">
           <Button 
             variant="ghost" 
             size="icon"
             onClick={handleLike}
-            className={cn(isLiked && "text-destructive")}
+            className={cn("touch-manipulation", isLiked && "text-destructive")}
           >
             <Heart className={cn("w-6 h-6", isLiked && "fill-current")} />
           </Button>
-          <Button variant="ghost" size="icon">
+          <Button variant="ghost" size="icon" className="touch-manipulation">
             <MessageCircle className="w-6 h-6" />
           </Button>
-          <Button variant="ghost" size="icon">
+          <Button variant="ghost" size="icon" className="touch-manipulation">
             <Send className="w-6 h-6" />
           </Button>
         </div>
 
         <div className="flex items-center gap-1">
           <Link to={`/post/${post.id}/review`}>
-            <Button variant="outline" size="sm" className="text-xs">
+            <Button variant="outline" size="sm" className="text-xs min-h-[36px] touch-manipulation">
               <Star className="w-4 h-4 mr-1" />
               {t("Review")}
             </Button>
@@ -186,7 +186,7 @@ export const PostCard = forwardRef<HTMLElement, PostCardProps>(({ post }, ref) =
             variant="ghost" 
             size="icon"
             onClick={handleSave}
-            className={cn(isSaved && "text-primary")}
+            className={cn("touch-manipulation", isSaved && "text-primary")}
           >
             <Bookmark className={cn("w-6 h-6", isSaved && "fill-current")} />
           </Button>
@@ -194,12 +194,12 @@ export const PostCard = forwardRef<HTMLElement, PostCardProps>(({ post }, ref) =
       </div>
 
       {/* Stats */}
-      <div className="px-4 pb-2">
+      <div className="px-3 sm:px-4 pb-2">
         <p className="text-sm font-semibold">{formatNumber(likes)} {t("likes")}</p>
       </div>
 
       {/* Content */}
-      <div className="px-4 pb-3">
+      <div className="px-3 sm:px-4 pb-3">
         <p className="text-sm">
           <Link to={`/profile/${post.author.username}`} className="font-semibold mr-1.5 hover:underline">
             {post.author.username}
@@ -208,7 +208,7 @@ export const PostCard = forwardRef<HTMLElement, PostCardProps>(({ post }, ref) =
           {translatedContent.length > 150 && !showFullContent && (
             <button 
               onClick={() => setShowFullContent(true)}
-              className="text-muted-foreground ml-1 hover:text-foreground"
+              className="text-muted-foreground ml-1 hover:text-foreground touch-manipulation"
             >
               {t("more")}
             </button>
@@ -218,7 +218,7 @@ export const PostCard = forwardRef<HTMLElement, PostCardProps>(({ post }, ref) =
 
       {/* Comments Preview */}
       {post.comments > 0 && (
-        <Link to={`/post/${post.id}`} className="block px-4 pb-4">
+        <Link to={`/post/${post.id}`} className="block px-3 sm:px-4 pb-4 min-h-[44px] flex items-center touch-manipulation">
           <p className="text-sm text-muted-foreground">
             {t("View all")} {formatNumber(post.comments)} {t("comments")}
           </p>

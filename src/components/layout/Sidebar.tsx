@@ -208,105 +208,92 @@ function NavLink({ item, isActive }: NavLinkProps) {
 }
 
 export function MobileNav({ onMenuClick }: { onMenuClick: () => void }) {
-  const location = useLocation();
-
-  const textsToTranslate = useMemo(() => 
-    mainNavItems.map(item => item.label), 
-  []);
-
-  const { t } = useAutoTranslate(textsToTranslate);
-
   return (
-    <>
-      {/* Top Header */}
-      <header className="fixed top-0 left-0 right-0 z-30 lg:hidden bg-background/80 backdrop-blur-xl border-b border-border">
-        <div className="flex items-center justify-between px-4 h-14">
-          <Button variant="ghost" size="icon-sm" onClick={onMenuClick}>
-            <Menu className="w-5 h-5" />
+    <header className="fixed top-0 left-0 right-0 z-30 lg:hidden bg-background/95 backdrop-blur-xl border-b border-border">
+      <div className="flex items-center justify-between px-4 h-14">
+        <Button 
+          variant="ghost" 
+          size="icon" 
+          onClick={onMenuClick}
+          className="min-w-[44px] min-h-[44px]"
+        >
+          <Menu className="w-5 h-5" />
+        </Button>
+        
+        <Link to="/" className="flex items-center gap-2 group">
+          <div className="relative">
+            <img 
+              src={creaverseLogo} 
+              alt="CreaverseDAO" 
+              className="w-8 h-8 object-contain transition-transform duration-300 group-hover:scale-110"
+            />
+            <div className="absolute inset-0 bg-primary/30 rounded-lg blur-lg opacity-0 group-hover:opacity-100 transition-opacity" />
+          </div>
+          <span className="font-bold bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent">
+            CreaverseDAO
+          </span>
+        </Link>
+
+        <Link to="/notifications">
+          <Button 
+            variant="ghost" 
+            size="icon"
+            className="min-w-[44px] min-h-[44px]"
+          >
+            <Bell className="w-5 h-5" />
           </Button>
-          
-          <Link to="/" className="flex items-center gap-2 group">
-            <div className="relative">
-              <img 
-                src={creaverseLogo} 
-                alt="CreaverseDAO" 
-                className="w-8 h-8 object-contain transition-transform duration-300 group-hover:scale-110"
-              />
-              <div className="absolute inset-0 bg-primary/30 rounded-lg blur-lg opacity-0 group-hover:opacity-100 transition-opacity" />
-            </div>
-            <span className="font-bold bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent">
-              CreaverseDAO
-            </span>
-          </Link>
-
-          <Link to="/notifications">
-            <Button variant="ghost" size="icon-sm">
-              <Bell className="w-5 h-5" />
-            </Button>
-          </Link>
-        </div>
-      </header>
-
-      {/* Bottom Tab Bar */}
-      <nav className="fixed bottom-0 left-0 right-0 z-30 lg:hidden bg-background/80 backdrop-blur-xl border-t border-border safe-area-inset-bottom">
-        <div className="flex items-center justify-around h-16 px-2">
-          {mainNavItems.map((item) => {
-            const Icon = item.icon;
-            const isActive = location.pathname === item.href;
-            
-            return (
-              <Link
-                key={item.href}
-                to={item.href}
-                className={cn(
-                  "flex flex-col items-center justify-center gap-1 px-3 py-2 rounded-lg transition-colors",
-                  isActive ? "text-primary" : "text-muted-foreground"
-                )}
-              >
-                <Icon className="w-6 h-6" />
-                <span className="text-[10px] font-medium">{t(item.label)}</span>
-              </Link>
-            );
-          })}
-        </div>
-      </nav>
-    </>
+        </Link>
+      </div>
+    </header>
   );
 }
+
+// Bottom navigation items - simplified for mobile
+const bottomNavItems: NavItem[] = [
+  { label: "Home", href: "/feed", icon: Home },
+  { label: "Search", href: "/search", icon: Search },
+  { label: "Create", href: "/create", icon: PlusSquare },
+  { label: "Activity", href: "/activity", icon: Heart },
+  { label: "Profile", href: "/profile", icon: User },
+];
 
 export function BottomNav() {
   const location = useLocation();
 
   const textsToTranslate = useMemo(() => 
-    mainNavItems.map(item => item.label), 
+    bottomNavItems.map(item => item.label), 
   []);
 
   const { t } = useAutoTranslate(textsToTranslate);
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-30 lg:hidden bg-background/95 backdrop-blur-xl border-t border-border">
-      <div className="flex items-center justify-around h-16 px-2 pb-safe">
-        {mainNavItems.map((item) => {
+      <div className="flex items-center justify-around h-16 px-1 pb-safe">
+        {bottomNavItems.map((item) => {
           const Icon = item.icon;
           const isActive = location.pathname === item.href;
+          const isCreate = item.href === "/create";
           
           return (
             <Link
               key={item.href}
               to={item.href}
               className={cn(
-                "flex flex-col items-center justify-center gap-1 px-4 py-2 transition-all",
-                isActive ? "text-primary scale-110" : "text-muted-foreground hover:text-foreground"
+                "flex flex-col items-center justify-center gap-0.5 min-w-[56px] min-h-[48px] py-1 transition-all touch-manipulation",
+                isActive ? "text-primary" : "text-muted-foreground active:text-foreground"
               )}
             >
-              {item.href === "/create" ? (
-                <div className="w-10 h-10 rounded-xl bg-gradient-primary flex items-center justify-center -mt-4 shadow-lg shadow-primary/30">
+              {isCreate ? (
+                <div className="w-11 h-11 rounded-xl bg-gradient-primary flex items-center justify-center -mt-3 shadow-lg shadow-primary/30">
                   <Icon className="w-5 h-5 text-primary-foreground" />
                 </div>
               ) : (
                 <Icon className={cn("w-6 h-6", isActive && "fill-current")} />
               )}
-              <span className="text-[10px] font-medium">{t(item.label)}</span>
+              <span className={cn(
+                "text-[10px] font-medium",
+                isCreate && "mt-0.5"
+              )}>{t(item.label)}</span>
             </Link>
           );
         })}
