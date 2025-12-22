@@ -143,6 +143,42 @@ export type Database = {
           },
         ]
       }
+      content_embeddings: {
+        Row: {
+          content_id: string
+          content_type: string
+          created_at: string
+          embedding: Json | null
+          embedding_model: string | null
+          id: string
+          keywords: string[] | null
+          semantic_categories: string[] | null
+          updated_at: string
+        }
+        Insert: {
+          content_id: string
+          content_type: string
+          created_at?: string
+          embedding?: Json | null
+          embedding_model?: string | null
+          id?: string
+          keywords?: string[] | null
+          semantic_categories?: string[] | null
+          updated_at?: string
+        }
+        Update: {
+          content_id?: string
+          content_type?: string
+          created_at?: string
+          embedding?: Json | null
+          embedding_model?: string | null
+          id?: string
+          keywords?: string[] | null
+          semantic_categories?: string[] | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       follows: {
         Row: {
           created_at: string | null
