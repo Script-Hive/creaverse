@@ -69,16 +69,22 @@ interface ContractInfo {
   timelock: string;
 }
 
-// Contract addresses - UPDATE AFTER DEPLOYMENT
+// Contract addresses - Polygon Mainnet Deployment Ready
 export const CONTRACT_ADDRESSES: Record<number, ContractInfo> = {
-  // Polygon Mumbai Testnet
+  // Polygon Mainnet (Primary Target)
+  137: {
+    cdtToken: "", // Deploy CDT token and add address here
+    governor: "", // Deploy Governor and add address here
+    timelock: "", // Deploy Timelock and add address here
+  },
+  // Polygon Mumbai Testnet (Deprecated - use Amoy)
   80001: {
     cdtToken: "",
     governor: "",
     timelock: "",
   },
-  // Polygon Mainnet
-  137: {
+  // Polygon Amoy Testnet
+  80002: {
     cdtToken: "",
     governor: "",
     timelock: "",
