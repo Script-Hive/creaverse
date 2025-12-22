@@ -86,17 +86,17 @@ export default function Landing() {
     <div className="min-h-screen bg-background overflow-hidden">
       {/* Navigation */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border/50">
-        <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-3 group">
+        <div className="container mx-auto px-4 h-14 sm:h-16 flex items-center justify-between">
+          <Link to="/" className="flex items-center gap-2 sm:gap-3 group">
             <div className="relative">
               <img 
                 src={creaverseLogo} 
                 alt="CreaverseDAO" 
-                className="w-12 h-12 object-contain transition-transform duration-300 group-hover:scale-110 drop-shadow-[0_0_15px_rgba(34,211,238,0.4)]"
+                className="w-9 h-9 sm:w-12 sm:h-12 object-contain transition-transform duration-300 group-hover:scale-110 drop-shadow-[0_0_15px_rgba(34,211,238,0.4)]"
               />
               <div className="absolute inset-0 bg-gradient-to-r from-cyan-400/30 to-purple-500/30 rounded-xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
             </div>
-            <span className="font-bold text-xl bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-500 bg-clip-text text-transparent">
+            <span className="font-bold text-base sm:text-xl bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-500 bg-clip-text text-transparent">
               CreaverseDAO
             </span>
           </Link>
@@ -107,24 +107,27 @@ export default function Landing() {
             <a href="#governance" className="text-sm text-muted-foreground hover:text-foreground transition-colors">{t("Governance")}</a>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
             <Link to="/auth">
-              <Button variant="ghost" size="sm">{t("Sign In")}</Button>
+              <Button variant="ghost" size="sm" className="hidden sm:inline-flex">{t("Sign In")}</Button>
+              <Button variant="ghost" size="icon" className="sm:hidden min-h-[44px] min-w-[44px]">
+                <Users className="w-5 h-5" />
+              </Button>
             </Link>
             <Link to="/feed">
-              <Button variant="glow" size="sm">{t("Launch App")}</Button>
+              <Button variant="glow" size="sm" className="text-xs sm:text-sm px-3 sm:px-4">{t("Launch App")}</Button>
             </Link>
           </div>
         </div>
       </nav>
 
       {/* Hero Section */}
-      <section className="relative pt-32 pb-20 md:pt-40 md:pb-32 bg-gradient-hero">
+      <section className="relative pt-24 pb-12 sm:pt-32 sm:pb-20 md:pt-40 md:pb-32 bg-gradient-hero">
         {/* Background Effects */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/10 rounded-full blur-3xl animate-pulse-soft" />
-          <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-secondary/10 rounded-full blur-3xl animate-pulse-soft" style={{ animationDelay: "1s" }} />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-accent/5 rounded-full blur-3xl" />
+          <div className="absolute top-1/4 left-1/4 w-48 sm:w-96 h-48 sm:h-96 bg-primary/10 rounded-full blur-3xl animate-pulse-soft" />
+          <div className="absolute bottom-1/4 right-1/4 w-48 sm:w-96 h-48 sm:h-96 bg-secondary/10 rounded-full blur-3xl animate-pulse-soft" style={{ animationDelay: "1s" }} />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] sm:w-[600px] h-[300px] sm:h-[600px] bg-accent/5 rounded-full blur-3xl" />
         </div>
 
         {/* Grid Pattern */}
@@ -133,85 +136,85 @@ export default function Landing() {
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-4xl mx-auto text-center">
             {/* Hero Logo */}
-            <div className="mb-8 fade-in-up">
+            <div className="mb-6 sm:mb-8 fade-in-up">
               <div className="relative inline-block">
                 <img 
                   src={creaverseLogo} 
                   alt="CreaverseDAO" 
-                  className="w-32 h-32 md:w-40 md:h-40 object-contain mx-auto drop-shadow-[0_0_30px_rgba(34,211,238,0.5)] animate-float"
+                  className="w-24 h-24 sm:w-32 sm:h-32 md:w-40 md:h-40 object-contain mx-auto drop-shadow-[0_0_30px_rgba(34,211,238,0.5)] animate-float"
                 />
                 <div className="absolute inset-0 bg-gradient-to-r from-cyan-400/20 via-blue-500/20 to-purple-500/20 rounded-full blur-3xl animate-pulse" />
               </div>
             </div>
 
             {/* Badge */}
-            <Badge variant="glow" className="mb-6 fade-in-up stagger-1">
+            <Badge variant="glow" className="mb-4 sm:mb-6 fade-in-up stagger-1 text-xs sm:text-sm">
               <Zap className="w-3 h-3 mr-1" />
               {t("AI + DAO + Creative Community")}
             </Badge>
 
             {/* Headline */}
-            <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 fade-in-up stagger-2">
+            <h1 className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-bold mb-4 sm:mb-6 fade-in-up stagger-2">
               {t("Create. Govern.")}
               <span className="block bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-500 bg-clip-text text-transparent">{t("Build the Future.")}</span>
             </h1>
 
             {/* Subheadline */}
-            <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-8 fade-in-up stagger-3">
+            <p className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-6 sm:mb-8 fade-in-up stagger-3 px-2">
               {t("Join the decentralized creative ecosystem where AI accelerates your ideas, community shapes decisions, and contributions are rewarded.")}
             </p>
 
             {/* CTAs */}
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 fade-in-up stagger-4">
-              <Link to="/feed">
-                <Button variant="hero" size="xl" className="bg-gradient-to-r from-cyan-500 to-purple-600 hover:from-cyan-400 hover:to-purple-500 shadow-lg shadow-cyan-500/25">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 fade-in-up stagger-4 px-4">
+              <Link to="/feed" className="w-full sm:w-auto">
+                <Button variant="hero" size="lg" className="w-full sm:w-auto bg-gradient-to-r from-cyan-500 to-purple-600 hover:from-cyan-400 hover:to-purple-500 shadow-lg shadow-cyan-500/25 text-base sm:text-lg px-6 sm:px-8 py-4 sm:py-6">
                   {t("Enter Creaverse")}
                   <ArrowRight className="w-5 h-5" />
                 </Button>
               </Link>
-              <Link to="/governance">
-                <Button variant="hero-outline" size="xl" className="border-cyan-500/50 hover:border-cyan-400">
+              <Link to="/governance" className="w-full sm:w-auto">
+                <Button variant="hero-outline" size="lg" className="w-full sm:w-auto border-cyan-500/50 hover:border-cyan-400 text-base sm:text-lg px-6 sm:px-8 py-4 sm:py-6">
                   {t("Explore Governance")}
                 </Button>
               </Link>
             </div>
 
             {/* Stats */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-16 fade-in-up stagger-5">
-              <div className="text-center p-4 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 hover:border-cyan-500/30 transition-colors">
-                <p className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent">
-                  {isLoading ? <Loader2 className="w-6 h-6 animate-spin mx-auto" /> : (
+            <div className="grid grid-cols-2 gap-3 sm:gap-6 mt-10 sm:mt-16 fade-in-up stagger-5">
+              <div className="text-center p-3 sm:p-4 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 hover:border-cyan-500/30 transition-colors">
+                <p className="text-xl sm:text-3xl md:text-4xl font-bold bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent">
+                  {isLoading ? <Loader2 className="w-5 h-5 sm:w-6 sm:h-6 animate-spin mx-auto" /> : (
                     <AnimatedCounter value={formatNumber(stats?.activeMembers || 0)} suffix="+" />
                   )}
                 </p>
-                <p className="text-sm text-muted-foreground mt-1">{t("Active Members")}</p>
+                <p className="text-xs sm:text-sm text-muted-foreground mt-1">{t("Active Members")}</p>
               </div>
               
-              <div className="text-center p-4 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 hover:border-cyan-500/30 transition-colors">
-                <p className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent">
-                  {isLoading ? <Loader2 className="w-6 h-6 animate-spin mx-auto" /> : (
+              <div className="text-center p-3 sm:p-4 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 hover:border-cyan-500/30 transition-colors">
+                <p className="text-xl sm:text-3xl md:text-4xl font-bold bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent">
+                  {isLoading ? <Loader2 className="w-5 h-5 sm:w-6 sm:h-6 animate-spin mx-auto" /> : (
                     <AnimatedCounter value={String(stats?.proposalsPassed || 0)} suffix="+" />
                   )}
                 </p>
-                <p className="text-sm text-muted-foreground mt-1">{t("Proposals Passed")}</p>
+                <p className="text-xs sm:text-sm text-muted-foreground mt-1">{t("Proposals Passed")}</p>
               </div>
               
-              <div className="text-center p-4 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 hover:border-cyan-500/30 transition-colors">
-                <p className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent">
-                  {isLoading ? <Loader2 className="w-6 h-6 animate-spin mx-auto" /> : (
+              <div className="text-center p-3 sm:p-4 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 hover:border-cyan-500/30 transition-colors">
+                <p className="text-xl sm:text-3xl md:text-4xl font-bold bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent">
+                  {isLoading ? <Loader2 className="w-5 h-5 sm:w-6 sm:h-6 animate-spin mx-auto" /> : (
                     <AnimatedCounter value={formatCurrency(stats?.treasuryValue || 0)} />
                   )}
                 </p>
-                <p className="text-sm text-muted-foreground mt-1">{t("Treasury Value")}</p>
+                <p className="text-xs sm:text-sm text-muted-foreground mt-1">{t("Treasury Value")}</p>
               </div>
               
-              <div className="text-center p-4 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 hover:border-cyan-500/30 transition-colors">
-                <p className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent">
-                  {isLoading ? <Loader2 className="w-6 h-6 animate-spin mx-auto" /> : (
+              <div className="text-center p-3 sm:p-4 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 hover:border-cyan-500/30 transition-colors">
+                <p className="text-xl sm:text-3xl md:text-4xl font-bold bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent">
+                  {isLoading ? <Loader2 className="w-5 h-5 sm:w-6 sm:h-6 animate-spin mx-auto" /> : (
                     <AnimatedCounter value={formatNumber(stats?.projectsCreated || 0)} suffix="+" />
                   )}
                 </p>
-                <p className="text-sm text-muted-foreground mt-1">{t("Projects Created")}</p>
+                <p className="text-xs sm:text-sm text-muted-foreground mt-1">{t("Projects Created")}</p>
               </div>
             </div>
           </div>
