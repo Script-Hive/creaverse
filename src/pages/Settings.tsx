@@ -251,7 +251,7 @@ export default function Settings() {
             <span className="font-semibold text-sm">Creaverse DAO</span>
           </div>
           <p className="text-xs text-muted-foreground">
-            © 2024 Creaverse. {aiT("All rights reserved.")}
+            © 2026 Creaverse. {aiT("All rights reserved.")}
           </p>
         </div>
       </div>
