@@ -179,6 +179,36 @@ export type Database = {
         }
         Relationships: []
       }
+      conversations: {
+        Row: {
+          created_at: string
+          id: string
+          last_message_at: string | null
+          last_message_id: string | null
+          participant_one: string
+          participant_two: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          last_message_at?: string | null
+          last_message_id?: string | null
+          participant_one: string
+          participant_two: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          last_message_at?: string | null
+          last_message_id?: string | null
+          participant_one?: string
+          participant_two?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       follows: {
         Row: {
           created_at: string | null
@@ -352,6 +382,41 @@ export type Database = {
             columns: ["review_id"]
             isOneToOne: false
             referencedRelation: "reviews"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      messages: {
+        Row: {
+          content: string
+          conversation_id: string
+          created_at: string
+          id: string
+          is_read: boolean
+          sender_id: string
+        }
+        Insert: {
+          content: string
+          conversation_id: string
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          sender_id: string
+        }
+        Update: {
+          content?: string
+          conversation_id?: string
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          sender_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "conversations"
             referencedColumns: ["id"]
           },
         ]
@@ -756,6 +821,24 @@ export type Database = {
           },
         ]
       }
+      user_presence: {
+        Row: {
+          is_online: boolean
+          last_seen: string
+          user_id: string
+        }
+        Insert: {
+          is_online?: boolean
+          last_seen?: string
+          user_id: string
+        }
+        Update: {
+          is_online?: boolean
+          last_seen?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           granted_at: string | null
@@ -891,6 +974,11 @@ export type Database = {
         }
         Returns: string
       }
+      get_or_create_conversation: {
+        Args: { other_user_id: string }
+        Returns: string
+      }
+      get_unread_message_count: { Args: never; Returns: number }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -900,6 +988,10 @@ export type Database = {
       }
       increment_tokens: {
         Args: { amount: number; user_id: string }
+        Returns: undefined
+      }
+      mark_messages_read: {
+        Args: { p_conversation_id: string }
         Returns: undefined
       }
     }
