@@ -302,7 +302,7 @@ export default function Landing() {
             </div>
             
             <p className="text-sm text-muted-foreground">
-              © 2024 Creaverse DAO. {t("All rights reserved.")}
+              © 2026 Creaverse DAO. {t("All rights reserved.")}
             </p>
 
             <div className="flex items-center gap-6">
