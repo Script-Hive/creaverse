@@ -87,10 +87,10 @@ export function useUserStreak(userId?: string) {
         .from("user_streaks" as any)
         .select("*")
         .eq("user_id", userId)
-        .single();
+        .maybeSingle();
 
-      if (error && error.code !== "PGRST116") throw error;
-      return data as { current_streak: number; longest_streak: number; streak_multiplier: number; last_activity_date: string } | null;
+      if (error) throw error;
+      return data as unknown as { current_streak: number; longest_streak: number; streak_multiplier: number; last_activity_date: string } | null;
     },
     enabled: !!userId
   });
@@ -128,10 +128,10 @@ export function useTrustScore(userId?: string) {
         .from("sybil_detection" as any)
         .select("trust_score, sybil_risk_score, is_flagged")
         .eq("user_id", userId)
-        .single();
+        .maybeSingle();
 
-      if (error && error.code !== "PGRST116") return { trust_score: 50, sybil_risk_score: 0, is_flagged: false };
-      return data as { trust_score: number; sybil_risk_score: number; is_flagged: boolean };
+      if (error || !data) return { trust_score: 50, sybil_risk_score: 0, is_flagged: false };
+      return data as unknown as { trust_score: number; sybil_risk_score: number; is_flagged: boolean };
     },
     enabled: !!userId
   });
