@@ -94,7 +94,7 @@ export function WalletSection({ user, isOwnProfile }: WalletSectionProps) {
               <Coins className="w-4 h-4 text-primary" />
               <span className="text-xs text-muted-foreground">Balance</span>
             </div>
-            <p className="text-xl font-bold text-gradient-primary">
+            <p className="text-xl font-bold text-cyan-400 drop-shadow-sm">
               {formatNumber(user.tokensBalance)}
             </p>
             <p className="text-xs text-success flex items-center gap-1">

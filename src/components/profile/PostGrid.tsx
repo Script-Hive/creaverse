@@ -14,8 +14,13 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useAuth } from "@/hooks/useAuth";
+import { useIsPostLiked, usePostEngagement, useTogglePostLike, usePostLikes, useSharePost } from "@/hooks/useEngagement";
+import { toast } from "sonner";
+import { BadgeCheck } from "lucide-react";
 
 interface PostGridProps {
   posts: Post[];
@@ -25,9 +30,19 @@ interface PostGridProps {
 }
 
 export function PostGrid({ posts, emptyState, isOwnProfile, showNftBadge = true }: PostGridProps) {
+  const { user } = useAuth();
   const [selectedPost, setSelectedPost] = useState<Post | null>(null);
   const [likedPosts, setLikedPosts] = useState<Set<string>>(new Set());
   const [showHeart, setShowHeart] = useState<string | null>(null);
+  const engagement = usePostEngagement(selectedPost?.id ?? null);
+  const isLikedQuery = useIsPostLiked(selectedPost?.id ?? null);
+  const toggleLike = useTogglePostLike(selectedPost?.id ?? null);
+  const sharePost = useSharePost(selectedPost?.id ?? null);
+  const modalLikes = engagement.data?.likesCount ?? selectedPost?.likes ?? 0;
+  const modalComments = engagement.data?.commentsCount ?? selectedPost?.comments ?? 0;
+  const modalShares = engagement.data?.sharesCount ?? (selectedPost as any)?.shares ?? 0;
+  const modalIsLiked = isLikedQuery.data ?? likedPosts.has(selectedPost?.id ?? "");
+  const [likesDialogOpen, setLikesDialogOpen] = useState(false);
 
   const handleDoubleTap = (post: Post) => {
     if (!likedPosts.has(post.id)) {
@@ -176,9 +191,16 @@ export function PostGrid({ posts, emptyState, isOwnProfile, showNftBadge = true 
 
                   {/* Stats */}
                   <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                    <span>{formatNumber(selectedPost.likes)} likes</span>
-                    <span>{formatNumber(selectedPost.comments)} comments</span>
+                    <button
+                      type="button"
+                      onClick={() => setLikesDialogOpen(true)}
+                      className="hover:text-foreground transition-colors"
+                    >
+                      {formatNumber(modalLikes)} likes
+                    </button>
+                    <span>{formatNumber(modalComments)} comments</span>
                     <span>{formatNumber(selectedPost.reviews)} reviews</span>
+                    <span>{formatNumber(modalShares)} shares</span>
                   </div>
                 </div>
 
@@ -189,27 +211,50 @@ export function PostGrid({ posts, emptyState, isOwnProfile, showNftBadge = true 
                       <Button 
                         variant="ghost" 
                         size="icon"
-                        onClick={() => {
-                          if (!likedPosts.has(selectedPost.id)) {
-                            setLikedPosts(prev => new Set([...prev, selectedPost.id]));
-                          } else {
-                            setLikedPosts(prev => {
-                              const newSet = new Set(prev);
-                              newSet.delete(selectedPost.id);
-                              return newSet;
-                            });
-                          }
-                        }}
+                      onClick={() => {
+                        if (!user) {
+                          toast.error("Please sign in to like posts");
+                          return;
+                        }
+                        if (!likedPosts.has(selectedPost.id)) {
+                          setLikedPosts(prev => new Set([...prev, selectedPost.id]));
+                        } else {
+                          setLikedPosts(prev => {
+                            const newSet = new Set(prev);
+                            newSet.delete(selectedPost.id);
+                            return newSet;
+                          });
+                        }
+                        toggleLike.mutate();
+                      }}
                       >
                         <Heart className={cn(
                           "w-6 h-6 transition-colors",
-                          likedPosts.has(selectedPost.id) && "fill-destructive text-destructive"
+                        modalIsLiked && "fill-destructive text-destructive"
                         )} />
                       </Button>
                       <Button variant="ghost" size="icon">
                         <MessageCircle className="w-6 h-6" />
                       </Button>
-                      <Button variant="ghost" size="icon">
+                    <Button 
+                      variant="ghost" 
+                      size="icon"
+                      onClick={async () => {
+                        if (!user) {
+                          toast.error("Please sign in to share posts");
+                          return;
+                        }
+                        try {
+                          const url = `${window.location.origin}/post/${selectedPost.id}`;
+                          await navigator.clipboard?.writeText(url);
+                          sharePost.mutate("link");
+                          toast.success("Link copied");
+                        } catch (err) {
+                          console.error("share error", err);
+                          toast.error("Could not share");
+                        }
+                      }}
+                    >
                         <Share2 className="w-6 h-6" />
                       </Button>
                     </div>
@@ -234,6 +279,18 @@ export function PostGrid({ posts, emptyState, isOwnProfile, showNftBadge = true 
           )}
         </DialogContent>
       </Dialog>
+
+      {/* Likes Dialog for modal */}
+      {selectedPost && (
+        <Dialog open={likesDialogOpen} onOpenChange={setLikesDialogOpen}>
+          <DialogContent className="max-w-sm">
+            <DialogHeader>
+              <DialogTitle>Liked by</DialogTitle>
+            </DialogHeader>
+            <LikesList postId={selectedPost.id} />
+          </DialogContent>
+        </Dialog>
+      )}
     </>
   );
 }

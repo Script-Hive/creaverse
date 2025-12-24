@@ -1,5 +1,5 @@
 import { useMemo, useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { 
@@ -15,6 +15,8 @@ import {
 import { useTranslateTexts } from "@/components/ui/translatable-text";
 import creaverseLogo from "@/assets/creaverse-logo.png";
 import { useLandingStats, formatNumber, formatCurrency } from "@/hooks/useLandingStats";
+import { useAuth } from "@/hooks/useAuth";
+import "../styles/spline-iframe.css";
 
 const features = [
   {
@@ -59,7 +61,16 @@ function AnimatedCounter({ value, prefix = "", suffix = "" }: { value: string; p
 }
 
 export default function Landing() {
+  const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
   const { data: stats, isLoading } = useLandingStats();
+
+  // Remove automatic redirect - let users visit the landing page even when authenticated
+  // useEffect(() => {
+  //   if (isAuthenticated) {
+  //     navigate("/feed", { replace: true });
+  //   }
+  // }, [isAuthenticated, navigate]);
   // All texts to translate
   const textsToTranslate = useMemo(() => [
     "Features", "Community", "Governance", "Sign In", "Launch App",
@@ -122,58 +133,53 @@ export default function Landing() {
       </nav>
 
       {/* Hero Section */}
-      <section className="relative pt-24 pb-12 sm:pt-32 sm:pb-20 md:pt-40 md:pb-32 bg-gradient-hero">
-        {/* Background Effects */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-1/4 left-1/4 w-48 sm:w-96 h-48 sm:h-96 bg-primary/10 rounded-full blur-3xl animate-pulse-soft" />
-          <div className="absolute bottom-1/4 right-1/4 w-48 sm:w-96 h-48 sm:h-96 bg-secondary/10 rounded-full blur-3xl animate-pulse-soft" style={{ animationDelay: "1s" }} />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] sm:w-[600px] h-[300px] sm:h-[600px] bg-accent/5 rounded-full blur-3xl" />
+      <section className="relative pt-24 pb-12 sm:pt-32 sm:pb-20 md:pt-40 md:pb-32 min-h-screen flex items-center">
+        {/* 3D Animation Background */}
+        <div className="absolute inset-0 overflow-hidden spline-iframe-container">
+          <iframe 
+            src='https://my.spline.design/100followersfocus-sWgokELcNtF2J5Y56onrIfb7/' 
+            className="spline-iframe"
+            title="3D Animation Background"
+            allow="camera; microphone; xr-spatial-tracking"
+          />
+          {/* Watermark overlay */}
+          <div className="watermark-overlay" />
+          {/* Theme-aware overlay to improve text readability */}
+          <div className="absolute inset-0 bg-black/20 dark:bg-black/20 light:bg-white/30 backdrop-blur-[0.5px] pointer-events-none theme-transition" />
         </div>
 
-        {/* Grid Pattern */}
-        <div className="absolute inset-0 grid-bg opacity-30 pointer-events-none" />
-
-        <div className="container mx-auto px-4 relative z-10">
+        <div className="container mx-auto px-4 content-overlay">
           <div className="max-w-4xl mx-auto text-center">
-            {/* Hero Logo */}
-            <div className="mb-6 sm:mb-8 fade-in-up">
-              <div className="relative inline-block">
-                <img 
-                  src={creaverseLogo} 
-                  alt="CreaverseDAO" 
-                  className="w-24 h-24 sm:w-32 sm:h-32 md:w-40 md:h-40 object-contain mx-auto drop-shadow-[0_0_30px_rgba(34,211,238,0.5)] animate-float"
-                />
-                <div className="absolute inset-0 bg-gradient-to-r from-cyan-400/20 via-blue-500/20 to-purple-500/20 rounded-full blur-3xl animate-pulse" />
-              </div>
-            </div>
+            {/* Spacer to replace removed logo */}
+            <div className="mb-6 sm:mb-8 h-24 sm:h-32 md:h-40"></div>
 
             {/* Badge */}
-            <Badge variant="glow" className="mb-4 sm:mb-6 fade-in-up stagger-1 text-xs sm:text-sm">
+            <Badge variant="glow" className="mb-4 sm:mb-6 fade-in-up stagger-1 text-xs sm:text-sm bg-black/80 dark:bg-black/80 light:bg-white/90 backdrop-blur-md border-cyan-400/50 text-cyan-100 dark:text-cyan-100 light:text-cyan-600 shadow-2xl shadow-cyan-500/30 theme-transition">
               <Zap className="w-3 h-3 mr-1" />
               {t("AI + DAO + Creative Community")}
             </Badge>
 
             {/* Headline */}
-            <h1 className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-bold mb-4 sm:mb-6 fade-in-up stagger-2">
-              {t("Create. Govern.")}
-              <span className="block bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-500 bg-clip-text text-transparent">{t("Build the Future.")}</span>
+            <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-black mb-4 sm:mb-6 fade-in-up stagger-2">
+              <span className="text-white dark:text-white light:text-gray-900 drop-shadow-[0_4px_20px_rgba(0,0,0,0.9)] dark:drop-shadow-[0_4px_20px_rgba(0,0,0,0.9)] light:drop-shadow-[0_4px_20px_rgba(255,255,255,0.9)] [text-shadow:_2px_2px_4px_rgb(0_0_0_/_80%)] dark:[text-shadow:_2px_2px_4px_rgb(0_0_0_/_80%)] light:[text-shadow:_2px_2px_4px_rgb(255_255_255_/_80%)] theme-transition">{t("Create. Govern.")}</span>
+              <span className="block bg-gradient-to-r from-cyan-300 via-blue-400 to-purple-400 dark:from-cyan-300 dark:via-blue-400 dark:to-purple-400 light:from-cyan-600 light:via-blue-600 light:to-purple-600 bg-clip-text text-transparent drop-shadow-[0_4px_20px_rgba(0,0,0,0.9)] dark:drop-shadow-[0_4px_20px_rgba(0,0,0,0.9)] light:drop-shadow-[0_4px_20px_rgba(255,255,255,0.9)] [text-shadow:_2px_2px_4px_rgb(0_0_0_/_80%)] dark:[text-shadow:_2px_2px_4px_rgb(0_0_0_/_80%)] light:[text-shadow:_2px_2px_4px_rgb(255_255_255_/_80%)] theme-transition">{t("Build the Future.")}</span>
             </h1>
 
             {/* Subheadline */}
-            <p className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-6 sm:mb-8 fade-in-up stagger-3 px-2">
+            <p className="text-lg sm:text-xl md:text-2xl text-white/95 dark:text-white/95 light:text-gray-800/95 max-w-3xl mx-auto mb-6 sm:mb-8 fade-in-up stagger-3 px-2 font-medium bg-black/40 dark:bg-black/40 light:bg-white/80 backdrop-blur-md rounded-2xl p-6 border border-white/20 dark:border-white/20 light:border-gray-200/50 shadow-2xl [text-shadow:_1px_1px_2px_rgb(0_0_0_/_60%)] dark:[text-shadow:_1px_1px_2px_rgb(0_0_0_/_60%)] light:[text-shadow:_1px_1px_2px_rgb(255_255_255_/_60%)] theme-transition">
               {t("Join the decentralized creative ecosystem where AI accelerates your ideas, community shapes decisions, and contributions are rewarded.")}
             </p>
 
             {/* CTAs */}
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 fade-in-up stagger-4 px-4">
               <Link to="/feed" className="w-full sm:w-auto">
-                <Button variant="hero" size="lg" className="w-full sm:w-auto bg-gradient-to-r from-cyan-500 to-purple-600 hover:from-cyan-400 hover:to-purple-500 shadow-lg shadow-cyan-500/25 text-base sm:text-lg px-6 sm:px-8 py-4 sm:py-6">
+                <Button variant="hero" size="lg" className="w-full sm:w-auto bg-gradient-to-r from-cyan-500 to-purple-600 hover:from-cyan-400 hover:to-purple-500 shadow-2xl shadow-cyan-500/40 text-base sm:text-lg px-6 sm:px-8 py-4 sm:py-6 font-bold border border-cyan-400/30">
                   {t("Enter Creaverse")}
                   <ArrowRight className="w-5 h-5" />
                 </Button>
               </Link>
               <Link to="/governance" className="w-full sm:w-auto">
-                <Button variant="hero-outline" size="lg" className="w-full sm:w-auto border-cyan-500/50 hover:border-cyan-400 text-base sm:text-lg px-6 sm:px-8 py-4 sm:py-6">
+                <Button variant="hero-outline" size="lg" className="w-full sm:w-auto border-2 border-cyan-400/70 hover:border-cyan-300 text-white hover:bg-cyan-500/20 text-base sm:text-lg px-6 sm:px-8 py-4 sm:py-6 font-bold bg-black/30 backdrop-blur-md shadow-xl">
                   {t("Explore Governance")}
                 </Button>
               </Link>
@@ -181,40 +187,40 @@ export default function Landing() {
 
             {/* Stats */}
             <div className="grid grid-cols-2 gap-3 sm:gap-6 mt-10 sm:mt-16 fade-in-up stagger-5">
-              <div className="text-center p-3 sm:p-4 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 hover:border-cyan-500/30 transition-colors">
-                <p className="text-xl sm:text-3xl md:text-4xl font-bold bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent">
-                  {isLoading ? <Loader2 className="w-5 h-5 sm:w-6 sm:h-6 animate-spin mx-auto" /> : (
+              <div className="text-center p-4 sm:p-6 rounded-2xl bg-black/70 dark:bg-black/70 light:bg-white/90 backdrop-blur-md border border-cyan-400/40 dark:border-cyan-400/40 light:border-cyan-500/30 hover:border-cyan-400/60 dark:hover:border-cyan-400/60 light:hover:border-cyan-500/50 transition-all duration-300 shadow-2xl hover:shadow-cyan-500/30 theme-transition">
+                <p className="text-2xl sm:text-4xl md:text-5xl font-black bg-gradient-to-r from-cyan-300 to-purple-400 dark:from-cyan-300 dark:to-purple-400 light:from-cyan-600 light:to-purple-600 bg-clip-text text-transparent drop-shadow-lg [text-shadow:_1px_1px_2px_rgb(0_0_0_/_80%)] dark:[text-shadow:_1px_1px_2px_rgb(0_0_0_/_80%)] light:[text-shadow:_1px_1px_2px_rgb(255_255_255_/_80%)]">
+                  {isLoading ? <Loader2 className="w-6 h-6 sm:w-8 sm:h-8 animate-spin mx-auto text-cyan-400" /> : (
                     <AnimatedCounter value={formatNumber(stats?.activeMembers || 0)} suffix="+" />
                   )}
                 </p>
-                <p className="text-xs sm:text-sm text-muted-foreground mt-1">{t("Active Members")}</p>
+                <p className="text-sm sm:text-base text-cyan-100 dark:text-cyan-100 light:text-cyan-700 mt-2 font-semibold [text-shadow:_1px_1px_2px_rgb(0_0_0_/_60%)] dark:[text-shadow:_1px_1px_2px_rgb(0_0_0_/_60%)] light:[text-shadow:_1px_1px_2px_rgb(255_255_255_/_60%)]">{t("Active Members")}</p>
               </div>
               
-              <div className="text-center p-3 sm:p-4 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 hover:border-cyan-500/30 transition-colors">
-                <p className="text-xl sm:text-3xl md:text-4xl font-bold bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent">
-                  {isLoading ? <Loader2 className="w-5 h-5 sm:w-6 sm:h-6 animate-spin mx-auto" /> : (
+              <div className="text-center p-4 sm:p-6 rounded-2xl bg-black/70 dark:bg-black/70 light:bg-white/90 backdrop-blur-md border border-cyan-400/40 dark:border-cyan-400/40 light:border-cyan-500/30 hover:border-cyan-400/60 dark:hover:border-cyan-400/60 light:hover:border-cyan-500/50 transition-all duration-300 shadow-2xl hover:shadow-cyan-500/30 theme-transition">
+                <p className="text-2xl sm:text-4xl md:text-5xl font-black bg-gradient-to-r from-cyan-300 to-purple-400 dark:from-cyan-300 dark:to-purple-400 light:from-cyan-600 light:to-purple-600 bg-clip-text text-transparent drop-shadow-lg [text-shadow:_1px_1px_2px_rgb(0_0_0_/_80%)] dark:[text-shadow:_1px_1px_2px_rgb(0_0_0_/_80%)] light:[text-shadow:_1px_1px_2px_rgb(255_255_255_/_80%)]">
+                  {isLoading ? <Loader2 className="w-6 h-6 sm:w-8 sm:h-8 animate-spin mx-auto text-cyan-400" /> : (
                     <AnimatedCounter value={String(stats?.proposalsPassed || 0)} suffix="+" />
                   )}
                 </p>
-                <p className="text-xs sm:text-sm text-muted-foreground mt-1">{t("Proposals Passed")}</p>
+                <p className="text-sm sm:text-base text-cyan-100 dark:text-cyan-100 light:text-cyan-700 mt-2 font-semibold [text-shadow:_1px_1px_2px_rgb(0_0_0_/_60%)] dark:[text-shadow:_1px_1px_2px_rgb(0_0_0_/_60%)] light:[text-shadow:_1px_1px_2px_rgb(255_255_255_/_60%)]">{t("Proposals Passed")}</p>
               </div>
               
-              <div className="text-center p-3 sm:p-4 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 hover:border-cyan-500/30 transition-colors">
-                <p className="text-xl sm:text-3xl md:text-4xl font-bold bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent">
-                  {isLoading ? <Loader2 className="w-5 h-5 sm:w-6 sm:h-6 animate-spin mx-auto" /> : (
+              <div className="text-center p-4 sm:p-6 rounded-2xl bg-black/70 dark:bg-black/70 light:bg-white/90 backdrop-blur-md border border-cyan-400/40 dark:border-cyan-400/40 light:border-cyan-500/30 hover:border-cyan-400/60 dark:hover:border-cyan-400/60 light:hover:border-cyan-500/50 transition-all duration-300 shadow-2xl hover:shadow-cyan-500/30 theme-transition">
+                <p className="text-2xl sm:text-4xl md:text-5xl font-black bg-gradient-to-r from-cyan-300 to-purple-400 dark:from-cyan-300 dark:to-purple-400 light:from-cyan-600 light:to-purple-600 bg-clip-text text-transparent drop-shadow-lg [text-shadow:_1px_1px_2px_rgb(0_0_0_/_80%)] dark:[text-shadow:_1px_1px_2px_rgb(0_0_0_/_80%)] light:[text-shadow:_1px_1px_2px_rgb(255_255_255_/_80%)]">
+                  {isLoading ? <Loader2 className="w-6 h-6 sm:w-8 sm:h-8 animate-spin mx-auto text-cyan-400" /> : (
                     <AnimatedCounter value={formatCurrency(stats?.treasuryValue || 0)} />
                   )}
                 </p>
-                <p className="text-xs sm:text-sm text-muted-foreground mt-1">{t("Treasury Value")}</p>
+                <p className="text-sm sm:text-base text-cyan-100 dark:text-cyan-100 light:text-cyan-700 mt-2 font-semibold [text-shadow:_1px_1px_2px_rgb(0_0_0_/_60%)] dark:[text-shadow:_1px_1px_2px_rgb(0_0_0_/_60%)] light:[text-shadow:_1px_1px_2px_rgb(255_255_255_/_60%)]">{t("Treasury Value")}</p>
               </div>
               
-              <div className="text-center p-3 sm:p-4 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 hover:border-cyan-500/30 transition-colors">
-                <p className="text-xl sm:text-3xl md:text-4xl font-bold bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent">
-                  {isLoading ? <Loader2 className="w-5 h-5 sm:w-6 sm:h-6 animate-spin mx-auto" /> : (
+              <div className="text-center p-4 sm:p-6 rounded-2xl bg-black/70 dark:bg-black/70 light:bg-white/90 backdrop-blur-md border border-cyan-400/40 dark:border-cyan-400/40 light:border-cyan-500/30 hover:border-cyan-400/60 dark:hover:border-cyan-400/60 light:hover:border-cyan-500/50 transition-all duration-300 shadow-2xl hover:shadow-cyan-500/30 theme-transition">
+                <p className="text-2xl sm:text-4xl md:text-5xl font-black bg-gradient-to-r from-cyan-300 to-purple-400 dark:from-cyan-300 dark:to-purple-400 light:from-cyan-600 light:to-purple-600 bg-clip-text text-transparent drop-shadow-lg [text-shadow:_1px_1px_2px_rgb(0_0_0_/_80%)] dark:[text-shadow:_1px_1px_2px_rgb(0_0_0_/_80%)] light:[text-shadow:_1px_1px_2px_rgb(255_255_255_/_80%)]">
+                  {isLoading ? <Loader2 className="w-6 h-6 sm:w-8 sm:h-8 animate-spin mx-auto text-cyan-400" /> : (
                     <AnimatedCounter value={formatNumber(stats?.projectsCreated || 0)} suffix="+" />
                   )}
                 </p>
-                <p className="text-xs sm:text-sm text-muted-foreground mt-1">{t("Projects Created")}</p>
+                <p className="text-sm sm:text-base text-cyan-100 dark:text-cyan-100 light:text-cyan-700 mt-2 font-semibold [text-shadow:_1px_1px_2px_rgb(0_0_0_/_60%)] dark:[text-shadow:_1px_1px_2px_rgb(0_0_0_/_60%)] light:[text-shadow:_1px_1px_2px_rgb(255_255_255_/_60%)]">{t("Projects Created")}</p>
               </div>
             </div>
           </div>

@@ -1,4 +1,4 @@
-import { forwardRef, useMemo } from "react";
+import { forwardRef, useMemo, useState } from "react";
 import { Post } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -11,24 +11,34 @@ import {
   Play,
   Star,
   Coins,
-  BadgeCheck,
-  Send
+  BadgeCheck
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useState } from "react";
 import { Link } from "react-router-dom";
 import { getCategoryGradient } from "@/data/categories";
 import { TranslatableText, useTranslateTexts } from "@/components/ui/translatable-text";
+import { useAuth } from "@/hooks/useAuth";
+import { useIsPostLiked, usePostEngagement, useTogglePostLike, useSharePost } from "@/hooks/useEngagement";
+import { toast } from "sonner";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { usePostLikes } from "@/hooks/useEngagement";
 
 interface PostCardProps {
   post: Post;
 }
 
 export const PostCard = forwardRef<HTMLElement, PostCardProps>(({ post }, ref) => {
-  const [isLiked, setIsLiked] = useState(post.isLiked);
+  const { user } = useAuth();
+  const [isLikedLocal, setIsLikedLocal] = useState(post.isLiked);
   const [isSaved, setIsSaved] = useState(post.isSaved);
-  const [likes, setLikes] = useState(post.likes);
+  const [likesLocal, setLikesLocal] = useState(post.likes);
   const [showFullContent, setShowFullContent] = useState(false);
+  const [likesDialogOpen, setLikesDialogOpen] = useState(false);
+  const { data: engagement } = usePostEngagement(post.id);
+  const { data: likedRemote } = useIsPostLiked(post.id);
+  const toggleLike = useTogglePostLike(post.id);
+  const sharePost = useSharePost(post.id);
 
   // Texts to translate
   const textsToTranslate = useMemo(() => [
@@ -46,9 +56,33 @@ export const PostCard = forwardRef<HTMLElement, PostCardProps>(({ post }, ref) =
 
   const { t } = useTranslateTexts(textsToTranslate);
 
+  const isLiked = likedRemote ?? isLikedLocal;
+  const likesCount = engagement?.likesCount ?? likesLocal;
+
   const handleLike = () => {
-    setIsLiked(!isLiked);
-    setLikes(isLiked ? likes - 1 : likes + 1);
+    if (!user) {
+      toast.error("Please sign in to like posts");
+      return;
+    }
+    setIsLikedLocal(!isLiked);
+    setLikesLocal(isLiked ? Math.max(0, likesCount - 1) : likesCount + 1);
+    toggleLike.mutate();
+  };
+
+  const handleShare = async () => {
+    if (!user) {
+      toast.error("Please sign in to share posts");
+      return;
+    }
+    try {
+      const url = `${window.location.origin}/post/${post.id}`;
+      await navigator.clipboard?.writeText(url);
+      sharePost.mutate("link");
+      toast.success("Link copied");
+    } catch (err) {
+      console.error("share error", err);
+      toast.error("Could not share");
+    }
   };
 
   const handleSave = () => {
@@ -118,11 +152,38 @@ export const PostCard = forwardRef<HTMLElement, PostCardProps>(({ post }, ref) =
       {/* Media */}
       <Link to={`/post/${post.id}`}>
         <div className="relative aspect-square bg-muted overflow-hidden">
-          <img 
-            src={post.mediaUrl} 
-            alt={post.content.slice(0, 50)}
-            className="w-full h-full object-cover"
-          />
+          {post.mediaType === "video" ? (
+            <video 
+              src={post.mediaUrl} 
+              className="w-full h-full object-cover"
+              poster={post.thumbnailUrl || post.mediaUrl}
+              preload="metadata"
+            />
+          ) : post.mediaType === "audio" ? (
+            <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-purple-500/20 to-pink-500/20">
+              <div className="text-center">
+                <div className="w-20 h-20 rounded-full bg-background/80 backdrop-blur-sm flex items-center justify-center mx-auto mb-4">
+                  <Play className="w-10 h-10 text-foreground fill-foreground ml-1" />
+                </div>
+                <p className="text-sm font-medium text-foreground/80">Audio Content</p>
+              </div>
+            </div>
+          ) : post.mediaType === "document" ? (
+            <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-500/20 to-cyan-500/20">
+              <div className="text-center">
+                <div className="w-20 h-20 rounded-full bg-background/80 backdrop-blur-sm flex items-center justify-center mx-auto mb-4">
+                  <Play className="w-10 h-10 text-foreground fill-foreground ml-1" />
+                </div>
+                <p className="text-sm font-medium text-foreground/80">Document</p>
+              </div>
+            </div>
+          ) : (
+            <img 
+              src={post.mediaUrl} 
+              alt={post.content.slice(0, 50)}
+              className="w-full h-full object-cover"
+            />
+          )}
           
           {post.mediaType === "video" && (
             <div className="absolute inset-0 flex items-center justify-center bg-background/20">
@@ -170,8 +231,13 @@ export const PostCard = forwardRef<HTMLElement, PostCardProps>(({ post }, ref) =
           <Button variant="ghost" size="icon" className="touch-manipulation">
             <MessageCircle className="w-6 h-6" />
           </Button>
-          <Button variant="ghost" size="icon" className="touch-manipulation">
-            <Send className="w-6 h-6" />
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="touch-manipulation"
+            onClick={handleShare}
+          >
+            <Share2 className="w-6 h-6" />
           </Button>
         </div>
 
@@ -195,7 +261,13 @@ export const PostCard = forwardRef<HTMLElement, PostCardProps>(({ post }, ref) =
 
       {/* Stats */}
       <div className="px-3 sm:px-4 pb-2">
-        <p className="text-sm font-semibold">{formatNumber(likes)} {t("likes")}</p>
+        <button
+          type="button"
+          onClick={() => setLikesDialogOpen(true)}
+          className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+        >
+          {formatNumber(likesCount)} {t("likes")}
+        </button>
       </div>
 
       {/* Content */}
@@ -229,3 +301,49 @@ export const PostCard = forwardRef<HTMLElement, PostCardProps>(({ post }, ref) =
 });
 
 PostCard.displayName = "PostCard";
+
+function LikesDialog({
+  postId,
+  open,
+  onOpenChange,
+}: {
+  postId: string;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}) {
+  const { data: likes, isLoading } = usePostLikes(postId);
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle>Likes</DialogTitle>
+        </DialogHeader>
+        <div className="max-h-96 overflow-y-auto">
+          {isLoading ? (
+            <div className="flex items-center justify-center py-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+            </div>
+          ) : likes && likes.length > 0 ? (
+            <div className="space-y-3">
+              {likes.map((like) => (
+                <div key={like.id} className="flex items-center gap-3">
+                  <Avatar className="h-10 w-10">
+                    <AvatarImage src={like.user.avatar} alt={like.user.displayName} />
+                    <AvatarFallback>{like.user.displayName.charAt(0)}</AvatarFallback>
+                  </Avatar>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium truncate">{like.user.displayName}</p>
+                    <p className="text-sm text-muted-foreground truncate">@{like.user.username}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-center text-muted-foreground py-8">No likes yet</p>
+          )}
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}

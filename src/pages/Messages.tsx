@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { AppLayout } from "@/components/layout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -36,15 +36,19 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function Messages() {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [selectedConversation, setSelectedConversation] = useState<ConversationWithDetails | null>(null);
   const [messageInput, setMessageInput] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [newChatQuery, setNewChatQuery] = useState("");
   const [isNewChatOpen, setIsNewChatOpen] = useState(false);
+  const [showAuthDialog, setShowAuthDialog] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const { data: conversations = [], isLoading: conversationsLoading } = useConversations();
@@ -101,10 +105,8 @@ export default function Messages() {
 
   // Redirect to auth if not logged in
   useEffect(() => {
-    if (!user) {
-      navigate("/auth");
-    }
-  }, [user, navigate]);
+    setShowAuthDialog(!user);
+  }, [user]);
 
   const timeAgo = (date: string | null): string => {
     if (!date) return "";
@@ -130,13 +132,75 @@ export default function Messages() {
     }
   };
 
+  const fetchConversationDetails = useCallback(
+    async (conversationId: string): Promise<ConversationWithDetails | null> => {
+      const { data: { user: currentUser } } = await supabase.auth.getUser();
+      if (!currentUser) return null;
+
+      const { data: conv } = await supabase
+        .from("conversations")
+        .select("*")
+        .eq("id", conversationId)
+        .single();
+      if (!conv) return null;
+
+      const otherId =
+        conv.participant_one === currentUser.id ? conv.participant_two : conv.participant_one;
+
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("id, username, display_name, avatar_url, is_verified")
+        .eq("id", otherId)
+        .maybeSingle();
+
+      const { data: lastMessage } = await supabase
+        .from("messages")
+        .select("*")
+        .eq("conversation_id", conv.id)
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      const { count } = await supabase
+        .from("messages")
+        .select("*", { count: "exact", head: true })
+        .eq("conversation_id", conv.id)
+        .eq("is_read", false)
+        .neq("sender_id", currentUser.id);
+
+      const { data: presence } = await supabase
+        .from("user_presence")
+        .select("is_online, last_seen")
+        .eq("user_id", otherId)
+        .maybeSingle();
+
+      return {
+        ...conv,
+        other_user: profile,
+        last_message: lastMessage,
+        unread_count: count || 0,
+        is_online: presence?.is_online || false,
+        last_seen: presence?.last_seen,
+      };
+    },
+    []
+  );
+
   const handleStartConversation = async (userId: string) => {
     try {
       const conversationId = await getOrCreateConversation.mutateAsync(userId);
       setIsNewChatOpen(false);
       setNewChatQuery("");
-      
-      // Find or wait for the conversation to appear
+
+      // Optimistically load the new/updated conversation details
+      const convDetails = await fetchConversationDetails(conversationId);
+      if (convDetails) {
+        setSelectedConversation(convDetails);
+        queryClient.invalidateQueries({ queryKey: ["conversations"] });
+        return;
+      }
+
+      // Fallback: select from already-loaded list if present
       const conv = conversations.find((c) => c.id === conversationId);
       if (conv) {
         setSelectedConversation(conv);
@@ -152,7 +216,31 @@ export default function Messages() {
   );
 
   if (!user) {
-    return null;
+    return (
+      <AppLayout>
+        <Dialog open={showAuthDialog} onOpenChange={setShowAuthDialog}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle>Sign in to message</DialogTitle>
+            </DialogHeader>
+            <p className="text-sm text-muted-foreground">
+              You need an account to view and send messages.
+            </p>
+            <div className="flex gap-3 mt-4">
+              <Button className="flex-1" onClick={() => navigate("/auth?tab=login")}>
+                Login
+              </Button>
+              <Button variant="outline" className="flex-1" onClick={() => navigate("/auth?tab=signup")}>
+                Sign up
+              </Button>
+            </div>
+            <Button variant="ghost" className="w-full mt-2" onClick={() => navigate("/")}>
+              Go back
+            </Button>
+          </DialogContent>
+        </Dialog>
+      </AppLayout>
+    );
   }
 
   return (

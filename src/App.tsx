@@ -30,6 +30,8 @@ import Auth from "./pages/Auth";
 import Search from "./pages/Search";
 import Notifications from "./pages/Notifications";
 import NotFound from "./pages/NotFound";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import TermsOfService from "./pages/TermsOfService";
 
 const queryClient = new QueryClient();
 
@@ -66,6 +68,8 @@ const App = () => (
               <Route path="/ai-tools" element={<AITools />} />
               <Route path="/projects" element={<Projects />} />
               <Route path="/messages" element={<Messages />} />
+              <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+              <Route path="/terms-of-service" element={<TermsOfService />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>

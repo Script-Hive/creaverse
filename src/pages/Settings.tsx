@@ -8,6 +8,7 @@ import { useSettings, languageOptions } from "@/contexts/SettingsContext";
 import { useAutoTranslate } from "@/hooks/useTranslation";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import creaverseNewLogo from "@/assets/creaverse-new-logo.png";
 import { 
   User, 
   Moon, 
@@ -18,7 +19,6 @@ import {
   LogOut,
   ChevronRight,
   ExternalLink,
-  Sparkles,
   Shield,
   FileText,
   Loader2
@@ -57,13 +57,21 @@ export default function Settings() {
     navigate('/');
   };
 
-  const handleThemeToggle = () => {
-    setTheme(theme === 'dark' ? 'light' : 'dark');
-    toast.success(
-      theme === 'dark' 
-        ? aiT("Light mode activated")
-        : aiT("Dark mode activated")
-    );
+  const handleThemeToggle = (isDark: boolean) => {
+    // isDark represents the new state of the toggle
+    const newTheme = isDark ? 'dark' : 'light';
+    
+    // Update theme through context (handles all DOM updates)
+    setTheme(newTheme);
+    
+    // Show success message with icons
+    setTimeout(() => {
+      toast.success(
+        newTheme === 'light' 
+          ? `☀️ ${aiT("Light mode activated")}`
+          : `🌙 ${aiT("Dark mode activated")}`
+      );
+    }, 150);
   };
 
   const handleNotificationsToggle = () => {
@@ -81,7 +89,7 @@ export default function Settings() {
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-bold text-gradient-primary mb-2">{t('settings')}</h1>
+            <h1 className="text-2xl font-bold text-foreground mb-2">{t('settings')}</h1>
             {isTranslating && <Loader2 className="w-4 h-4 animate-spin text-primary" />}
           </div>
           <p className="text-muted-foreground text-sm">
@@ -117,18 +125,23 @@ export default function Settings() {
           <div className="rounded-xl bg-card border border-border/50 overflow-hidden">
             <SettingsItem
               icon={theme === 'dark' ? Moon : Sun}
-              iconColor="text-primary"
+              iconColor={theme === 'dark' ? "text-blue-400" : "text-yellow-500"}
               title={t('theme')}
               description={t('themeDescription')}
             >
               <div className="flex items-center gap-3">
-                <span className="text-xs text-muted-foreground">
-                  {theme === 'dark' ? t('darkMode') : t('lightMode')}
-                </span>
+                <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                  <Sun className="w-3 h-3" />
+                  <span className="hidden sm:inline">Light</span>
+                </div>
                 <Switch 
                   checked={theme === 'dark'} 
                   onCheckedChange={handleThemeToggle}
                 />
+                <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                  <Moon className="w-3 h-3" />
+                  <span className="hidden sm:inline">Dark</span>
+                </div>
               </div>
             </SettingsItem>
           </div>
@@ -198,7 +211,7 @@ export default function Settings() {
           </h2>
           <div className="rounded-xl bg-card border border-border/50 overflow-hidden">
             <SettingsItem
-              icon={Sparkles}
+              icon={Info}
               iconColor="text-accent"
               title={t('appVersion')}
               description={`Creaverse DAO v${APP_VERSION}`}
@@ -208,7 +221,7 @@ export default function Settings() {
               icon={FileText}
               iconColor="text-primary"
               title={t('termsOfService')}
-              onClick={() => window.open('#', '_blank')}
+              onClick={() => navigate('/terms-of-service')}
             >
               <ExternalLink className="w-4 h-4 text-muted-foreground" />
             </SettingsItem>
@@ -217,7 +230,7 @@ export default function Settings() {
               icon={Shield}
               iconColor="text-success"
               title={t('privacyPolicy')}
-              onClick={() => window.open('#', '_blank')}
+              onClick={() => navigate('/privacy-policy')}
             >
               <ExternalLink className="w-4 h-4 text-muted-foreground" />
             </SettingsItem>
@@ -244,11 +257,26 @@ export default function Settings() {
 
         {/* Footer */}
         <div className="text-center py-6">
-          <div className="flex items-center justify-center gap-2 mb-2">
-            <div className="w-6 h-6 rounded-lg bg-gradient-primary flex items-center justify-center">
-              <Sparkles className="w-3 h-3 text-primary-foreground" />
+          <div className="flex items-center justify-center mb-4">
+            <div 
+              className="logo-hover-glow cursor-pointer"
+              onClick={() => navigate('/')}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  navigate('/');
+                }
+              }}
+              aria-label="Go to home page"
+            >
+              <img 
+                src={creaverseNewLogo} 
+                alt="Creaverse DAO Logo" 
+                className="w-32 h-32 object-contain"
+              />
             </div>
-            <span className="font-semibold text-sm">Creaverse DAO</span>
           </div>
           <p className="text-xs text-muted-foreground">
             © 2026 Creaverse. {aiT("All rights reserved.")}

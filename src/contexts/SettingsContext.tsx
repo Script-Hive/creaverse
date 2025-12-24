@@ -254,8 +254,13 @@ const SettingsContext = createContext<SettingsContextType | undefined>(undefined
 
 export function SettingsProvider({ children }: { children: ReactNode }) {
   const [theme, setThemeState] = useState<'dark' | 'light'>(() => {
+    // Check system preference first, then saved preference
     const saved = localStorage.getItem('creaverse-theme');
-    return (saved as 'dark' | 'light') || 'dark';
+    if (saved) {
+      return saved as 'dark' | 'light';
+    }
+    // Default to system preference or dark
+    return window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
   });
 
   const [notificationsEnabled, setNotificationsEnabledState] = useState(() => {
@@ -269,15 +274,18 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
   });
 
   const setTheme = (newTheme: 'dark' | 'light') => {
+    // Remove existing theme classes
+    document.documentElement.classList.remove('dark', 'light');
+    
+    // Add new theme class
+    document.documentElement.classList.add(newTheme);
+    
+    // Update state and localStorage
     setThemeState(newTheme);
     localStorage.setItem('creaverse-theme', newTheme);
     
-    // Apply theme to document
-    if (newTheme === 'dark') {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
+    // Force a repaint to ensure theme is applied immediately
+    document.documentElement.style.colorScheme = newTheme;
   };
 
   const setNotificationsEnabled = (enabled: boolean) => {
@@ -294,14 +302,28 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     return translations[language][key] || key;
   };
 
-  // Apply theme on mount
+  // Apply theme on mount and when theme changes
   useEffect(() => {
-    if (theme === 'dark') {
-      document.documentElement.classList.add('dark');
+    // Remove any existing theme classes
+    document.documentElement.classList.remove('dark', 'light');
+    
+    // Add the current theme class
+    document.documentElement.classList.add(theme);
+    
+    // Set color scheme for better browser integration
+    document.documentElement.style.colorScheme = theme;
+    
+    // Update meta theme-color for mobile browsers
+    const metaThemeColor = document.querySelector('meta[name="theme-color"]');
+    if (metaThemeColor) {
+      metaThemeColor.setAttribute('content', theme === 'dark' ? '#0f0f23' : '#ffffff');
     } else {
-      document.documentElement.classList.remove('dark');
+      const meta = document.createElement('meta');
+      meta.name = 'theme-color';
+      meta.content = theme === 'dark' ? '#0f0f23' : '#ffffff';
+      document.head.appendChild(meta);
     }
-  }, []);
+  }, [theme]);
 
   return (
     <SettingsContext.Provider

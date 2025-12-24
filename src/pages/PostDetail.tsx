@@ -1,14 +1,25 @@
 import { useParams, Link } from "react-router-dom";
+import { useState } from "react";
+import { toast } from "sonner";
 import { AppLayout } from "@/components/layout";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Textarea } from "@/components/ui/textarea";
-import { mockPosts, mockReviews, mockUsers } from "@/data/mockData";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { mockPosts } from "@/data/mockData";
+import { usePosts } from "@/hooks/usePosts";
 import { getCategoryGradient } from "@/data/categories";
 import { cn } from "@/lib/utils";
-import { useState } from "react";
-import { toast } from "sonner";
+import { useAuth } from "@/hooks/useAuth";
+import { 
+  useIsPostLiked,
+  usePostEngagement,
+  useTogglePostLike,
+  useSharePost,
+  usePostComments,
+  useAddComment,
+} from "@/hooks/useEngagement";
 import { 
   ArrowLeft, 
   Heart, 
@@ -20,23 +31,53 @@ import {
   Star,
   Coins,
   BadgeCheck,
-  Send,
-  ThumbsUp
+  Send
 } from "lucide-react";
 
 export default function PostDetail() {
   const { id } = useParams<{ id: string }>();
-  const post = mockPosts.find(p => p.id === id) || mockPosts[0];
-  const reviews = mockReviews.filter(r => r.postId === id);
   
-  const [isLiked, setIsLiked] = useState(post.isLiked);
+  // Get posts from database
+  const { data: realPosts } = usePosts();
+  
+  // Combine database posts with fallback mock posts
+  const allPosts = [
+    ...(realPosts || []),
+    ...mockPosts // fallback to original mock posts for development
+  ];
+  
+  const post = allPosts.find(p => p.id === id) || mockPosts[0];
+  
+  console.log("PostDetail - Looking for post ID:", id);
+  console.log("PostDetail - Available posts:", allPosts.map(p => ({ id: p.id, mediaType: p.mediaType, mediaUrl: p.mediaUrl })));
+  console.log("PostDetail - Found post:", { id: post.id, mediaType: post.mediaType, mediaUrl: post.mediaUrl });
+  
+  const { user } = useAuth();
+  const [isLikedLocal, setIsLikedLocal] = useState(post.isLiked);
   const [isSaved, setIsSaved] = useState(post.isSaved);
-  const [likes, setLikes] = useState(post.likes);
+  const [likesLocal, setLikesLocal] = useState(post.likes);
   const [comment, setComment] = useState("");
+  const [likesDialogOpen, setLikesDialogOpen] = useState(false);
+  const engagement = usePostEngagement(post.id);
+  const isLikedQuery = useIsPostLiked(post.id);
+  const toggleLike = useTogglePostLike(post.id);
+  const sharePost = useSharePost(post.id);
+  const commentsQuery = usePostComments(post.id);
+  const addComment = useAddComment(post.id);
+
+  const isLiked = isLikedQuery.data ?? isLikedLocal;
+  const likesCount = engagement.data?.likesCount ?? likesLocal;
+  const commentsCount = commentsQuery.data?.length ?? post.comments;
+  const sharesCount = engagement.data?.sharesCount ?? (post as any).shares ?? 0;
 
   const handleLike = () => {
-    setIsLiked(!isLiked);
-    setLikes(isLiked ? likes - 1 : likes + 1);
+    if (!user) {
+      toast.error("Please sign in to like posts");
+      return;
+    }
+    setIsLikedLocal(!isLiked);
+    setLikesLocal(isLiked ? Math.max(0, likesCount - 1) : likesCount + 1);
+    toggleLike.mutate();
   };
 
   const handleSave = () => {
@@ -45,9 +86,28 @@ export default function PostDetail() {
   };
 
   const handleComment = () => {
-    if (comment.trim()) {
-      toast.success("Comment posted!");
-      setComment("");
+    if (!user) {
+      toast.error("Please sign in to comment");
+      return;
+    }
+    if (!comment.trim()) return;
+    addComment.mutate({ content: comment });
+    setComment("");
+  };
+
+  const handleShare = async () => {
+    if (!user) {
+      toast.error("Please sign in to share posts");
+      return;
+    }
+    try {
+      const url = `${window.location.origin}/post/${post.id}`;
+      await navigator.clipboard?.writeText(url);
+      sharePost.mutate("link");
+      toast.success("Link copied");
+    } catch (err) {
+      console.error("share error", err);
+      toast.error("Could not share");
     }
   };
 
@@ -122,18 +182,49 @@ export default function PostDetail() {
 
           {/* Media */}
           <div className="relative aspect-square bg-muted overflow-hidden">
-            <img 
-              src={post.mediaUrl} 
-              alt={post.content.slice(0, 50)}
-              className="w-full h-full object-cover"
-            />
-            
-            {post.mediaType === "video" && (
-              <div className="absolute inset-0 flex items-center justify-center bg-background/20">
-                <div className="w-16 h-16 rounded-full bg-background/80 backdrop-blur-sm flex items-center justify-center cursor-pointer hover:scale-110 transition-transform">
-                  <Play className="w-8 h-8 text-foreground fill-foreground ml-1" />
+            {post.mediaType === "video" ? (
+              <video 
+                src={post.mediaUrl} 
+                controls
+                className="w-full h-full object-cover"
+                poster={post.thumbnailUrl || post.mediaUrl}
+              />
+            ) : post.mediaType === "audio" ? (
+              <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-purple-500/20 to-pink-500/20">
+                <div className="text-center p-8">
+                  <div className="w-24 h-24 rounded-full bg-background/80 backdrop-blur-sm flex items-center justify-center mx-auto mb-6">
+                    <Play className="w-12 h-12 text-foreground fill-foreground ml-1" />
+                  </div>
+                  <audio src={post.mediaUrl} controls className="w-full max-w-md mx-auto" />
+                  <p className="text-sm font-medium text-foreground/80 mt-4">Audio Content</p>
                 </div>
               </div>
+            ) : post.mediaType === "document" ? (
+              <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-500/20 to-cyan-500/20">
+                <div className="text-center p-8">
+                  <div className="w-24 h-24 rounded-full bg-background/80 backdrop-blur-sm flex items-center justify-center mx-auto mb-6">
+                    <Play className="w-12 h-12 text-foreground fill-foreground ml-1" />
+                  </div>
+                  <Button 
+                    variant="outline" 
+                    onClick={() => {
+                      if (post.mediaUrl) {
+                        window.open(post.mediaUrl, '_blank');
+                      }
+                    }}
+                    className="mb-4"
+                  >
+                    Open Document
+                  </Button>
+                  <p className="text-sm font-medium text-foreground/80">Document Content</p>
+                </div>
+              </div>
+            ) : (
+              <img 
+                src={post.mediaUrl} 
+                alt={post.content.slice(0, 50)}
+                className="w-full h-full object-cover"
+              />
             )}
 
             {/* Category Badge */}
@@ -163,7 +254,7 @@ export default function PostDetail() {
               <Button variant="ghost" size="icon">
                 <MessageCircle className="w-6 h-6" />
               </Button>
-              <Button variant="ghost" size="icon">
+            <Button variant="ghost" size="icon" onClick={handleShare}>
                 <Share2 className="w-6 h-6" />
               </Button>
             </div>
@@ -187,10 +278,17 @@ export default function PostDetail() {
           </div>
 
           {/* Stats */}
-          <div className="px-4 pb-2 flex items-center gap-4">
-            <p className="text-sm font-semibold">{formatNumber(likes)} likes</p>
-            <p className="text-sm text-muted-foreground">{formatNumber(post.comments)} comments</p>
+          <div className="px-4 pb-4">
+            <button
+              type="button"
+              onClick={() => setLikesDialogOpen(true)}
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
+              {formatNumber(likesCount)} likes
+            </button>
+            <p className="text-sm text-muted-foreground">{formatNumber(commentsCount)} comments</p>
             <p className="text-sm text-muted-foreground">{formatNumber(post.reviews)} reviews</p>
+            <p className="text-sm text-muted-foreground">{formatNumber(sharesCount)} shares</p>
           </div>
 
           {/* Content */}
@@ -215,68 +313,41 @@ export default function PostDetail() {
           </div>
         </article>
 
-        {/* Reviews Section */}
-        {reviews.length > 0 && (
-          <div className="border-t border-border">
-            <div className="p-4">
-              <h2 className="font-semibold flex items-center gap-2">
-                <Star className="w-5 h-5 text-warning fill-warning" />
-                Reviews ({reviews.length})
-              </h2>
-            </div>
+        {/* Comments Section */}
+        <div className="border-t border-border">
+          <div className="p-4 flex items-center gap-2">
+            <MessageCircle className="w-5 h-5" />
+            <h2 className="font-semibold">Comments</h2>
+          </div>
+          {commentsQuery.data && commentsQuery.data.length > 0 ? (
             <div className="divide-y divide-border">
-              {reviews.map(review => (
-                <div key={review.id} className="p-4">
+              {commentsQuery.data.map((c) => (
+                <div key={c.id} className="p-4">
                   <div className="flex items-start gap-3">
                     <Avatar className="w-8 h-8">
                       <AvatarFallback className="bg-gradient-to-br from-primary to-accent text-white text-xs">
-                        {review.author.displayName.charAt(0)}
+                        {c.author?.display_name?.charAt(0) ?? "?"}
                       </AvatarFallback>
                     </Avatar>
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-1">
-                        <span className="font-medium text-sm">{review.author.displayName}</span>
-                        {review.author.isVerified && (
+                        <span className="font-medium text-sm">{c.author?.display_name ?? "User"}</span>
+                        {c.author?.is_verified && (
                           <BadgeCheck className="w-3.5 h-3.5 text-primary fill-primary/20" />
                         )}
-                        <div className="flex items-center gap-0.5">
-                          {[...Array(5)].map((_, i) => (
-                            <Star 
-                              key={i} 
-                              className={cn(
-                                "w-3 h-3",
-                                i < review.rating 
-                                  ? "text-warning fill-warning" 
-                                  : "text-muted-foreground"
-                              )} 
-                            />
-                          ))}
-                        </div>
-                        {review.isVerified && (
-                          <Badge variant="outline" className="text-[10px]">Verified</Badge>
-                        )}
+                        <span className="text-xs text-muted-foreground">@{c.author?.username ?? ""}</span>
+                        <span className="text-xs text-muted-foreground">{timeAgo(new Date(c.created_at))}</span>
                       </div>
-                      <p className="text-sm text-foreground/90">{review.content}</p>
-                      <div className="flex items-center gap-4 mt-2">
-                        <button className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground">
-                          <ThumbsUp className="w-3 h-3" />
-                          {review.likes}
-                        </button>
-                        <span className="text-xs text-muted-foreground">{timeAgo(review.createdAt)}</span>
-                        {review.tokensEarned > 0 && (
-                          <Badge variant="secondary" className="text-[10px]">
-                            <Coins className="w-3 h-3 mr-1" />
-                            +{review.tokensEarned}
-                          </Badge>
-                        )}
-                      </div>
+                      <p className="text-sm text-foreground/90 whitespace-pre-wrap break-words">{c.content}</p>
                     </div>
                   </div>
                 </div>
               ))}
             </div>
-          </div>
-        )}
+          ) : (
+            <p className="px-4 pb-6 text-sm text-muted-foreground">No comments yet.</p>
+          )}
+        </div>
 
         {/* Comment Input */}
         <div className="sticky bottom-0 bg-background border-t border-border p-4">
@@ -290,7 +361,7 @@ export default function PostDetail() {
               <Textarea
                 value={comment}
                 onChange={(e) => setComment(e.target.value)}
-                placeholder="Add a comment..."
+                placeholder={user ? "Add a comment..." : "Sign in to comment"}
                 className="min-h-[40px] max-h-[120px] pr-12 resize-none"
               />
               <Button 
@@ -298,7 +369,7 @@ export default function PostDetail() {
                 size="icon-sm"
                 className="absolute right-2 top-1/2 -translate-y-1/2"
                 onClick={handleComment}
-                disabled={!comment.trim()}
+                disabled={!comment.trim() || !user}
               >
                 <Send className="w-4 h-4" />
               </Button>

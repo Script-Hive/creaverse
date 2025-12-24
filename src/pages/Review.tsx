@@ -12,6 +12,7 @@ import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useReviewScoring, useModeratdedSubmission } from "@/hooks/useAIModeration";
+import { useRealTimeReviewAnalysis } from "@/hooks/useRealTimeReviewAnalysis";
 import { 
   ArrowLeft, 
   Star,
@@ -21,7 +22,11 @@ import {
   Send,
   AlertCircle,
   Shield,
-  Brain
+  Brain,
+  Eye,
+  TrendingUp,
+  TrendingDown,
+  Zap
 } from "lucide-react";
 
 export default function Review() {
@@ -43,8 +48,10 @@ export default function Review() {
 
   const reviewScoring = useReviewScoring();
   const checkContent = useModeratdedSubmission();
+  const { analysis, isAnalyzing } = useRealTimeReviewAnalysis(content, rating);
 
-  const estimatedReward = Math.floor(rating * 10 + content.length * 0.1);
+  // Use real-time analysis for estimated reward, fallback to simple calculation
+  const estimatedReward = analysis?.estimatedReward ?? 0;
 
   const handleSubmit = async () => {
     if (rating === 0) {
@@ -234,6 +241,127 @@ export default function Review() {
           </div>
         </div>
 
+        {/* Real-time AI Analysis */}
+        {content.length >= 20 && (
+          <Card className={cn(
+            "mb-6 transition-all duration-300",
+            analysis?.isAiGenerated ? "border-destructive/50 bg-destructive/5" : 
+            analysis?.authenticityScore && analysis.authenticityScore > 70 ? "border-success/50 bg-success/5" :
+            "border-warning/50 bg-warning/5"
+          )}>
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-2">
+                  <Brain className={cn(
+                    "w-4 h-4",
+                    isAnalyzing ? "animate-pulse text-primary" : "text-muted-foreground"
+                  )} />
+                  <span className="text-sm font-medium">
+                    {isAnalyzing ? "Analyzing..." : "AI Analysis"}
+                  </span>
+                </div>
+                {analysis && (
+                  <div className="flex items-center gap-2">
+                    <Badge variant={analysis.isAiGenerated ? "destructive" : "success"} className="text-xs">
+                      {analysis.isAiGenerated ? "AI Detected" : "Human-like"}
+                    </Badge>
+                  </div>
+                )}
+              </div>
+
+              {analysis && (
+                <div className="space-y-3">
+                  {/* Scores */}
+                  <div className="grid grid-cols-3 gap-3">
+                    <div className="text-center p-2 rounded-lg bg-background/50">
+                      <div className="flex items-center justify-center gap-1 mb-1">
+                        <Eye className="w-3 h-3 text-primary" />
+                        <span className="text-xs font-medium">Authenticity</span>
+                      </div>
+                      <p className={cn(
+                        "text-lg font-bold",
+                        analysis.authenticityScore > 70 ? "text-success" :
+                        analysis.authenticityScore > 40 ? "text-warning" : "text-destructive"
+                      )}>
+                        {analysis.authenticityScore}%
+                      </p>
+                    </div>
+                    <div className="text-center p-2 rounded-lg bg-background/50">
+                      <div className="flex items-center justify-center gap-1 mb-1">
+                        <TrendingUp className="w-3 h-3 text-primary" />
+                        <span className="text-xs font-medium">Quality</span>
+                      </div>
+                      <p className={cn(
+                        "text-lg font-bold",
+                        analysis.qualityScore > 70 ? "text-success" :
+                        analysis.qualityScore > 40 ? "text-warning" : "text-destructive"
+                      )}>
+                        {analysis.qualityScore}%
+                      </p>
+                    </div>
+                    <div className="text-center p-2 rounded-lg bg-background/50">
+                      <div className="flex items-center justify-center gap-1 mb-1">
+                        <Zap className="w-3 h-3 text-primary" />
+                        <span className="text-xs font-medium">AI Risk</span>
+                      </div>
+                      <p className={cn(
+                        "text-lg font-bold",
+                        analysis.aiConfidence < 30 ? "text-success" :
+                        analysis.aiConfidence < 70 ? "text-warning" : "text-destructive"
+                      )}>
+                        {analysis.aiConfidence}%
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Feedback */}
+                  {analysis.feedback.warnings.length > 0 && (
+                    <div className="p-2 rounded-lg bg-destructive/10 border border-destructive/20">
+                      <p className="text-xs font-medium text-destructive mb-1">⚠️ Warnings:</p>
+                      <ul className="text-xs text-destructive/80 space-y-1">
+                        {analysis.feedback.warnings.map((warning, i) => (
+                          <li key={i}>• {warning}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                  {analysis.feedback.strengths.length > 0 && (
+                    <div className="p-2 rounded-lg bg-success/10 border border-success/20">
+                      <p className="text-xs font-medium text-success mb-1">✅ Strengths:</p>
+                      <ul className="text-xs text-success/80 space-y-1">
+                        {analysis.feedback.strengths.map((strength, i) => (
+                          <li key={i}>• {strength}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                  {analysis.feedback.improvements.length > 0 && (
+                    <div className="p-2 rounded-lg bg-warning/10 border border-warning/20">
+                      <p className="text-xs font-medium text-warning mb-1">💡 Suggestions:</p>
+                      <ul className="text-xs text-warning/80 space-y-1">
+                        {analysis.feedback.improvements.map((improvement, i) => (
+                          <li key={i}>• {improvement}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                  {/* Metrics */}
+                  <div className="text-xs text-muted-foreground border-t pt-2">
+                    <div className="flex justify-between">
+                      <span>Words: {analysis.metrics.wordCount}</span>
+                      <span>Sentences: {analysis.metrics.sentenceCount}</span>
+                      <span>Readability: {Math.round(analysis.metrics.readabilityScore)}%</span>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        )}
+
         {/* AI Scoring Progress */}
         {aiScoring && (
           <Card variant="gradient" className="mb-6 border-primary/50">
@@ -296,12 +424,28 @@ export default function Review() {
                   </div>
                   <div>
                     <p className="text-sm font-medium">Estimated Reward</p>
-                    <p className="text-xs text-muted-foreground">AI will analyze your review for final reward</p>
+                    <p className="text-xs text-muted-foreground">
+                      {analysis ? "Based on AI analysis" : "Start typing for AI analysis"}
+                    </p>
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className="text-2xl font-bold text-gradient-primary">{estimatedReward}</p>
-                  <p className="text-xs text-muted-foreground">tokens (estimate)</p>
+                  <p className={cn(
+                    "text-2xl font-bold drop-shadow-sm transition-colors",
+                    estimatedReward === 0 ? "text-muted-foreground" :
+                    estimatedReward < 10 ? "text-destructive" :
+                    estimatedReward < 25 ? "text-warning" : "text-success"
+                  )}>
+                    {estimatedReward}
+                  </p>
+                  <p className="text-xs text-foreground/80">
+                    tokens {analysis ? "(live estimate)" : "(estimate)"}
+                  </p>
+                  {analysis?.isAiGenerated && (
+                    <p className="text-xs text-destructive mt-1">
+                      ⚠️ AI content penalty applied
+                    </p>
+                  )}
                 </div>
               </div>
             </CardContent>
@@ -313,14 +457,15 @@ export default function Review() {
           <CardContent className="p-4">
             <h3 className="font-medium mb-2 flex items-center gap-2">
               <Sparkles className="w-4 h-4 text-primary" />
-              AI-Powered Review Guidelines
+              Real-time AI Review Analysis
             </h3>
             <ul className="text-sm text-muted-foreground space-y-1">
-              <li>• Be honest and constructive in your feedback</li>
-              <li>• Focus on specific aspects of the content</li>
-              <li>• Avoid personal attacks or inappropriate language</li>
-              <li>• <strong>AI analyzes</strong> your review for quality and helpfulness</li>
-              <li>• Higher quality reviews earn <strong>more tokens</strong> (up to 50 CDT)</li>
+              <li>• <strong>Real-time analysis</strong> as you type (after 20 characters)</li>
+              <li>• <strong>AI detection</strong> - authentic reviews earn more tokens</li>
+              <li>• <strong>Quality scoring</strong> based on detail, clarity, and helpfulness</li>
+              <li>• Be honest, specific, and personal in your feedback</li>
+              <li>• <strong>Higher authenticity</strong> = higher rewards (up to 50+ CDT)</li>
+              <li>• <strong>AI-generated content</strong> receives minimal rewards</li>
             </ul>
           </CardContent>
         </Card>

@@ -51,7 +51,7 @@ export default function Auth() {
   const [username, setUsername] = useState("");
 
   const { t } = useAutoTranslate([
-    "Create & Earn",
+    "Create And Govern",
     "Welcome",
     "Sign in to your account to continue",
     "Create an account to get started",
@@ -129,11 +129,6 @@ export default function Auth() {
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!signupEmail || !signupPassword || !signupConfirmPassword || !displayName || !username) {
-      toast.error(t("Please fill in all fields"));
-      return;
-    }
 
     if (signupPassword !== signupConfirmPassword) {
       toast.error(t("Passwords do not match"));
@@ -152,7 +147,8 @@ export default function Auth() {
 
     setIsLoading(true);
     try {
-      const redirectUrl = `${window.location.origin}/`;
+      // Redirect verified users to the feed instead of root
+      const redirectUrl = `${window.location.origin}/feed`;
       
       const { error } = await supabase.auth.signUp({
         email: signupEmail,
@@ -214,7 +210,7 @@ export default function Auth() {
             <h1 className="text-3xl font-bold bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-500 bg-clip-text text-transparent">
               CreaverseDAO
             </h1>
-            <p className="text-sm text-muted-foreground mt-1">{t("Create & Earn")}</p>
+            <p className="text-sm text-muted-foreground mt-1">{t("Create And Govern")}</p>
           </div>
         </Link>
 

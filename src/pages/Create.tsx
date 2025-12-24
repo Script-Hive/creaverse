@@ -27,12 +27,16 @@ import {
   ChevronRight
 } from "lucide-react";
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { useCategories, useSubcategories, Subcategory } from "@/hooks/useCategories";
 import { useCreatePost } from "@/hooks/usePosts";
 import { Database } from "@/integrations/supabase/types";
 import { motion, AnimatePresence } from "framer-motion";
+import { MediaUploader } from "@/components/media/MediaUploader";
+import { MediaFile } from "@/services/mediaStorageService";
+
 
 type MediaType = Database["public"]["Enums"]["media_type"];
 type CreatorType = Database["public"]["Enums"]["creator_type"];
@@ -41,7 +45,7 @@ const mediaTypes: { id: MediaType; label: string; icon: React.ComponentType<{ cl
   { id: "image", label: "Image", icon: Image, accept: "image/*" },
   { id: "video", label: "Video", icon: Video, accept: "video/*" },
   { id: "audio", label: "Audio", icon: Music, accept: "audio/*" },
-  { id: "document", label: "Document", icon: FileText, accept: ".pdf,.doc,.docx" },
+  { id: "document", label: "Document", icon: FileText, accept: ".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" },
 ];
 
 // Category icon and color mapping
@@ -55,6 +59,7 @@ const categoryConfig: Record<string, { icon: React.ComponentType<{ className?: s
 };
 
 export default function Create() {
+  const navigate = useNavigate();
   const [selectedCategoryId, setSelectedCategoryId] = useState<string>("");
   const [selectedSubcategoryId, setSelectedSubcategoryId] = useState<string>("");
   const [selectedSubcategory, setSelectedSubcategory] = useState<Subcategory | null>(null);
@@ -64,8 +69,7 @@ export default function Create() {
   const [tagInput, setTagInput] = useState("");
   const [isTokenized, setIsTokenized] = useState(false);
   const [tokenReward, setTokenReward] = useState(100);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [uploadedMedia, setUploadedMedia] = useState<MediaFile | null>(null);
 
   // Fetch categories and subcategories from database
   const { data: categories, isLoading: categoriesLoading } = useCategories();
@@ -89,6 +93,18 @@ export default function Create() {
     setSelectedSubcategory(null);
   }, [selectedCategoryId]);
 
+  // Cleanup object URLs to prevent memory leaks
+  useEffect(() => {
+    return () => {
+      if (uploadedMedia) {
+        URL.revokeObjectURL(uploadedMedia.url);
+        if (uploadedMedia.thumbnailUrl) {
+          URL.revokeObjectURL(uploadedMedia.thumbnailUrl);
+        }
+      }
+    };
+  }, [uploadedMedia]);
+
   // Get selected category data
   const selectedCategory = categories?.find(c => c.id === selectedCategoryId);
   const categoryKey = selectedCategory?.name.toLowerCase() || "";
@@ -108,13 +124,12 @@ export default function Create() {
     setTags(tags.filter(tag => tag !== tagToRemove));
   };
 
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setSelectedFile(file);
-      const url = URL.createObjectURL(file);
-      setPreviewUrl(url);
-    }
+  const handleMediaUpload = (mediaFile: MediaFile) => {
+    setUploadedMedia(mediaFile);
+  };
+
+  const handleMediaRemove = () => {
+    setUploadedMedia(null);
   };
 
   const handleSubmit = async (isDraft: boolean = false) => {
@@ -130,7 +145,7 @@ export default function Create() {
       toast.error("Please add a description");
       return;
     }
-    if (!previewUrl && !isDraft) {
+    if (!uploadedMedia && !isDraft) {
       toast.error("Please upload media");
       return;
     }
@@ -139,13 +154,14 @@ export default function Create() {
     const categoryName = selectedCategory.name.toLowerCase() as CreatorType;
     
     try {
+      // Save to database only
       await createPost.mutateAsync({
         title: content.substring(0, 100),
         content,
         category: categoryName,
         subcategory_id: selectedSubcategoryId,
         media_type: selectedMediaType,
-        media_url: previewUrl || undefined,
+        media_url: uploadedMedia?.url || undefined,
         tags,
         is_tokenized: isTokenized,
         token_reward: isTokenized ? tokenReward : 0,
@@ -164,10 +180,14 @@ export default function Create() {
         setSelectedSubcategoryId("");
         setContent("");
         setTags([]);
-        setPreviewUrl(null);
-        setSelectedFile(null);
+        setUploadedMedia(null);
         setIsTokenized(false);
         setTokenReward(100);
+        
+        // Navigate to feed after successful post creation
+        setTimeout(() => {
+          navigate("/feed");
+        }, 1500);
       }
     } catch (error: any) {
       toast.error("Failed to create post", {
@@ -406,6 +426,8 @@ export default function Create() {
           )}
         </AnimatePresence>
 
+
+
         {/* Media Type Selection */}
         <div className="mb-6">
           <Label className="text-base font-semibold mb-3 block flex items-center gap-2">
@@ -432,62 +454,20 @@ export default function Create() {
         </div>
 
         {/* Media Upload */}
-        <Card variant="glass" className="mb-6">
-          <CardContent className="p-6">
-            {previewUrl ? (
-              <div className="relative">
-                {selectedMediaType === "image" ? (
-                  <img 
-                    src={previewUrl} 
-                    alt="Preview" 
-                    className="w-full aspect-video object-cover rounded-lg"
-                  />
-                ) : selectedMediaType === "video" ? (
-                  <video 
-                    src={previewUrl} 
-                    controls
-                    className="w-full aspect-video object-cover rounded-lg"
-                  />
-                ) : selectedMediaType === "audio" ? (
-                  <div className="w-full p-8 bg-muted rounded-lg flex flex-col items-center gap-4">
-                    <Music className="w-16 h-16 text-muted-foreground" />
-                    <audio src={previewUrl} controls className="w-full" />
-                  </div>
-                ) : (
-                  <div className="w-full p-8 bg-muted rounded-lg flex flex-col items-center gap-4">
-                    <FileText className="w-16 h-16 text-muted-foreground" />
-                    <p className="text-sm text-muted-foreground">{selectedFile?.name}</p>
-                  </div>
-                )}
-                <Button
-                  variant="destructive"
-                  size="icon"
-                  className="absolute top-2 right-2"
-                  onClick={() => {
-                    setPreviewUrl(null);
-                    setSelectedFile(null);
-                  }}
-                >
-                  <X className="w-4 h-4" />
-                </Button>
-              </div>
-            ) : (
-              <label className="flex flex-col items-center justify-center py-12 border-2 border-dashed border-border rounded-lg cursor-pointer hover:border-primary/50 transition-colors">
-                <Upload className="w-12 h-12 text-muted-foreground mb-4" />
-                <span className="text-lg font-medium mb-1">Upload Media</span>
-                <span className="text-sm text-muted-foreground">
-                  Drag & drop or click to browse
-                </span>
-                <input
-                  type="file"
-                  accept={mediaTypes.find(t => t.id === selectedMediaType)?.accept}
-                  onChange={handleFileSelect}
-                  className="hidden"
-                />
-              </label>
-            )}
-          </CardContent>
-        </Card>
+        <div className="mb-6">
+          <Label className="text-base font-semibold mb-3 block flex items-center gap-2">
+            <span className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center text-xs font-bold text-primary">3</span>
+            Upload {mediaTypes.find(t => t.id === selectedMediaType)?.label}
+          </Label>
+          
+          <MediaUploader
+            mediaType={selectedMediaType}
+            onUpload={handleMediaUpload}
+            onRemove={handleMediaRemove}
+            maxSize={50 * 1024 * 1024} // 50MB
+            className="w-full"
+          />
+        </div>
 
         {/* Description */}
         <div className="mb-6">

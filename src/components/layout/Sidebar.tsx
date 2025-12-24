@@ -22,7 +22,8 @@ import {
   LucideIcon,
   Loader2,
   LogIn,
-  LogOut
+  LogOut,
+  MessageCircle
 } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
@@ -39,11 +40,17 @@ interface NavItem {
 }
 
 const mainNavItems: NavItem[] = [
+  // Priority items at the top
+  { label: "Wallet", href: "/wallet", icon: Wallet },
+  { label: "Governance", href: "/governance", icon: Shield },
+  { label: "Rewards", href: "/rewards", icon: Trophy },
+  // Regular navigation items
   { label: "Home", href: "/feed", icon: Home },
   { label: "Search", href: "/search", icon: Search },
   { label: "Explore", href: "/explore", icon: Compass },
   { label: "Create", href: "/create", icon: PlusSquare },
   { label: "Activity", href: "/activity", icon: Heart },
+  { label: "Messages", href: "/messages", icon: MessageCircle },
   { label: "Profile", href: "/profile", icon: User },
   { label: "Settings", href: "/settings", icon: Settings },
 ];
@@ -55,12 +62,6 @@ const categoryNavItems: NavItem[] = [
   { label: "Books", href: "/category/books", icon: BookOpen },
   { label: "Nature", href: "/category/nature", icon: Leaf },
   { label: "Music", href: "/category/music", icon: Music },
-];
-
-const extraNavItems: NavItem[] = [
-  { label: "Wallet", href: "/wallet", icon: Wallet },
-  { label: "Governance", href: "/governance", icon: Shield },
-  { label: "Rewards", href: "/rewards", icon: Trophy },
 ];
 
 interface SidebarProps {
@@ -79,9 +80,8 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
   const textsToTranslate = useMemo(() => [
     ...mainNavItems.map(item => item.label),
     ...categoryNavItems.map(item => item.label),
-    ...extraNavItems.map(item => item.label),
     "Categories",
-    "Create & Earn",
+    "Create And Govern",
     "Token Balance",
     "+120 this week",
     "Sign In",
@@ -125,7 +125,12 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
       >
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-sidebar-border">
-          <Link to="/" className="flex items-center gap-3 group">
+          <Link 
+            to="/" 
+            className="flex items-center gap-3 group cursor-pointer hover:opacity-80 transition-opacity relative z-10"
+            onClick={onClose} // Close sidebar on mobile when logo is clicked
+            style={{ pointerEvents: 'auto' }}
+          >
             <div className="relative">
               <img 
                 src={creaverseLogo} 
@@ -138,7 +143,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
               <h1 className="font-bold text-lg text-sidebar-foreground bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-500 bg-clip-text text-transparent">
                 CreaverseDAO
               </h1>
-              <p className="text-xs text-muted-foreground">{t("Create & Earn")}</p>
+              <p className="text-xs text-muted-foreground">{t("Create And Govern")}</p>
             </div>
           </Link>
 
@@ -179,17 +184,6 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
               />
             ))}
           </div>
-
-          {/* Wallet, Governance & Rewards */}
-          <div className="pt-4 mt-4 border-t border-sidebar-border space-y-1">
-            {extraNavItems.map((item) => (
-              <NavLink
-                key={item.href}
-                item={{ ...item, label: t(item.label) }}
-                isActive={location.pathname === item.href}
-              />
-            ))}
-          </div>
         </nav>
 
         {/* Token Balance & Auth */}
@@ -220,8 +214,8 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
                   <span className="text-xs text-muted-foreground">{t("Token Balance")}</span>
                   <Sparkles className="w-4 h-4 text-primary" />
                 </div>
-                <p className="text-2xl font-bold text-gradient-primary">2,340</p>
-                <p className="text-xs text-success mt-1">{t("+120 this week")}</p>
+                <p className="text-2xl font-bold text-cyan-400 drop-shadow-sm">2,340</p>
+                <p className="text-xs text-foreground mt-1">{t("+120 this week")}</p>
               </div>
 
               {/* Sign Out Button */}
@@ -308,12 +302,12 @@ function NavLink({ item, isActive }: NavLinkProps) {
       className={cn(
         "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200",
         isActive
-          ? "bg-primary/10 text-primary border border-primary/20"
+          ? "bg-primary/15 text-white border border-primary/30 shadow-lg shadow-primary/20"
           : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
       )}
     >
-      <Icon className={cn("w-5 h-5 flex-shrink-0", isActive && "text-primary")} />
-      <span>{item.label}</span>
+      <Icon className={cn("w-5 h-5 flex-shrink-0", isActive ? "text-primary" : "")} />
+      <span className={cn(isActive && "text-white font-semibold")}>{item.label}</span>
     </Link>
   );
 }
@@ -331,7 +325,11 @@ export function MobileNav({ onMenuClick }: { onMenuClick: () => void }) {
           <Menu className="w-5 h-5" />
         </Button>
         
-        <Link to="/" className="flex items-center gap-2 group">
+        <Link 
+          to="/" 
+          className="flex items-center gap-2 group cursor-pointer hover:opacity-80 transition-opacity relative z-10"
+          style={{ pointerEvents: 'auto' }}
+        >
           <div className="relative">
             <img 
               src={creaverseLogo} 
